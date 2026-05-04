@@ -406,7 +406,7 @@ function spawnEnemy(){
     enemies.push({
         x:x,
         y:y,
-        r:type>.75?28:22,
+        r:18 + Math.random()*16,
         hp:type>.75?3:type>.45?2:1,
         maxHp:type>.75?3:type>.45?2:1,
         speed:type>.75?1.05:type>.45?1.55:2.05,
