@@ -2,86 +2,314 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Bark Stars | Reh Dogg Games Plus</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;user-select:none}
-html,body,canvas,#gameBox,#mobileControls,.touchPad{touch-action:none}
-button, input, select, textarea {
-    font-size: 16px;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    user-select:none;
+    -webkit-user-select:none;
+    -webkit-touch-callout:none;
+}
+
+html, body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    touch-action:none;
+    overscroll-behavior:none;
 }
 
 body{
-    min-height:100vh;
+    position:fixed;
+    inset:0;
     background:radial-gradient(circle at top,#15586b,#061821 70%);
+    font-family:Arial,sans-serif;
+    color:white;
+}
+
+button, input, select, textarea{
+    font-size:16px;
+}
+
+#wrap{
+    width:100vw;
+    height:100dvh;
+    max-width:1000px;
+    margin:0 auto;
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    overflow:hidden;
+}
+
+#gameBox{
+    position:relative;
+    width:100%;
+    background:#082631;
+    border:5px solid #ffda44;
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:0 18px 45px rgba(0,0,0,.65);
+}
+
+canvas{
+    width:100%;
+    height:auto;
+    display:block;
+    background:#111;
+    touch-action:none;
+}
+
+#hud{
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    background:linear-gradient(90deg,#ffcc33,#ff8c1a);
+    color:#102b35;
+    padding:8px;
+    font-weight:900;
+}
+
+.pill{
+    background:white;
+    border:3px solid #102b35;
+    border-radius:999px;
+    padding:7px 8px;
+    text-align:center;
+    white-space:nowrap;
+    overflow:hidden;
+    font-size:clamp(.8rem,3.4vw,1.1rem);
+}
+
+button{
+    border:none;
+    border-radius:999px;
+    padding:10px 14px;
+    font-weight:900;
+    background:#1de0ff;
+    color:#082631;
+    cursor:pointer;
+    box-shadow:0 4px 0 #076b7a;
+}
+
+button:active{
+    transform:translateY(3px);
+    box-shadow:0 1px 0 #076b7a;
+}
+
+#restartBtn{
+    grid-column:1 / 3;
+    justify-self:center;
+    width:min(220px,60%);
+}
+
+#overlay{
+    position:absolute;
+    inset:0;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-family:Arial,sans-serif;
-    color:white;
+    background:linear-gradient(rgba(4,16,22,.78),rgba(4,16,22,.96));
+    z-index:5;
+    padding:16px;
+}
+
+.start-card{
+    width:100%;
+    max-width:850px;
+    height:100%;
+    max-height:620px;
+    border:5px solid #ffda44;
+    border-radius:28px;
+    background:linear-gradient(145deg,#082631,#0d3b4a);
+    box-shadow:0 20px 50px rgba(0,0,0,.65);
+    display:grid;
+    grid-template-columns:1fr 1fr;
     overflow:hidden;
 }
-#wrap{width:min(100vw,1100px);padding:10px}
-#gameBox{position:relative;background:#082631;border:5px solid #ffda44;border-radius:28px;overflow:hidden;box-shadow:0 25px 70px rgba(0,0,0,.65)}
-canvas{width:100%;display:block;background:#111}
-#hud{display:flex;gap:10px;justify-content:space-between;align-items:center;background:linear-gradient(90deg,#ffcc33,#ff8c1a);color:#102b35;padding:10px 14px;font-weight:900;flex-wrap:wrap}
-.pill{background:white;border:3px solid #102b35;border-radius:999px;padding:6px 12px}
-button{border:none;border-radius:999px;padding:10px 18px;font-weight:900;background:#1de0ff;color:#082631;cursor:pointer;box-shadow:0 4px 0 #076b7a}
-button:active{transform:translateY(3px);box-shadow:0 1px 0 #076b7a}
-#overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(rgba(4,16,22,.76),rgba(4,16,22,.95));z-index:5;padding:24px}
-.start-card{width:min(94%,850px);min-height:460px;border:6px solid #ffda44;border-radius:34px;background:linear-gradient(145deg,#082631,#0d3b4a);box-shadow:0 20px 50px rgba(0,0,0,.65);display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
-.start-left{padding:28px;display:flex;flex-direction:column;justify-content:center;text-align:left}
-.start-left h1{font-size:clamp(2.4rem,7vw,4.8rem);color:#ffda44;text-shadow:4px 4px #000;line-height:.95}
-.start-left h2{color:#1de0ff;margin:10px 0 14px;font-size:1.2rem}
-.start-left p{font-size:1rem;line-height:1.45;margin-bottom:12px}
-.start-buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
-.start-right{background:radial-gradient(circle,#ffffff22,#00000000 65%);display:flex;align-items:end;justify-content:center}
-.start-right img{width:95%;max-height:440px;object-fit:contain;filter:drop-shadow(0 18px 18px rgba(0,0,0,.65))}
-#startBtn{font-size:1.1rem;background:#ff3f6c;color:white;box-shadow:0 5px 0 #8f1633}
-#mobileControls{display:none;position:absolute;inset:0;pointer-events:none;z-index:4}
-.touchPad{position:absolute;bottom:22px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.18);border:3px solid rgba(255,255,255,.45);pointer-events:auto}
-#movePad{left:22px}#shootPad{right:22px}
-.knob{position:absolute;left:38px;top:38px;width:42px;height:42px;border-radius:50%;background:#ffda44;border:3px solid #222}
-.label{position:absolute;width:100%;text-align:center;bottom:-24px;font-weight:900;font-size:.75rem}
-@media(max-width:800px){#mobileControls{display:block}#hud{font-size:.8rem}}
-@media(max-width:750px){.start-card{grid-template-columns:1fr}.start-left{text-align:center;padding:22px}.start-right img{max-height:300px}.start-buttons{justify-content:center}}
+
+.start-left{
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    text-align:left;
+}
+
+.start-left h1{
+    font-size:clamp(2rem,8vw,4.4rem);
+    color:#ffda44;
+    text-shadow:4px 4px #000;
+    line-height:.95;
+}
+
+.start-left h2{
+    color:#1de0ff;
+    margin:10px 0 12px;
+    font-size:clamp(1rem,4vw,1.3rem);
+}
+
+.start-left p{
+    font-size:clamp(.85rem,3.2vw,1rem);
+    line-height:1.35;
+    margin-bottom:10px;
+}
+
+.start-buttons{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:8px;
+}
+
+.start-right{
+    background:radial-gradient(circle,#ffffff22,#00000000 65%);
+    display:flex;
+    align-items:end;
+    justify-content:center;
+}
+
+.start-right img{
+    width:95%;
+    max-height:95%;
+    object-fit:contain;
+    filter:drop-shadow(0 18px 18px rgba(0,0,0,.65));
+}
+
+#startBtn{
+    background:#ff3f6c;
+    color:white;
+    box-shadow:0 5px 0 #8f1633;
+}
+
+#mobileControls{
+    display:none;
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:4;
+}
+
+.touchPad{
+    position:absolute;
+    bottom:22px;
+    width:96px;
+    height:96px;
+    border-radius:50%;
+    background:rgba(255,255,255,.18);
+    border:3px solid rgba(255,255,255,.45);
+    pointer-events:auto;
+    touch-action:none;
+}
+
+#movePad{left:20px}
+#shootPad{right:20px}
+
+.knob{
+    position:absolute;
+    left:28px;
+    top:28px;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:#ffda44;
+    border:3px solid #222;
+}
+
+.label{
+    position:absolute;
+    width:100%;
+    text-align:center;
+    bottom:-24px;
+    font-weight:900;
+    font-size:.75rem;
+}
+
+@media(max-width:800px){
+    #mobileControls{display:block}
+}
+
+@media(max-width:700px){
+    #wrap{
+        justify-content:center;
+        padding:6px;
+    }
+
+    #gameBox{
+        border-width:4px;
+        border-radius:24px;
+    }
+
+    .start-card{
+        grid-template-columns:1fr;
+        max-height:none;
+    }
+
+    .start-left{
+        text-align:center;
+        padding:14px;
+    }
+
+    .start-buttons{
+        justify-content:center;
+    }
+
+    .start-right img{
+        max-height:250px;
+    }
+}
 </style>
 </head>
+
 <body>
 <div id="wrap">
-<div id="gameBox">
-<canvas id="game" width="1000" height="650"></canvas>
+    <div id="gameBox">
+        <canvas id="game" width="1000" height="650"></canvas>
 
-<div id="mobileControls">
-<div id="movePad" class="touchPad"><div id="moveKnob" class="knob"></div><div class="label">MOVE</div></div>
-<div id="shootPad" class="touchPad"><div id="shootKnob" class="knob"></div><div class="label">SHOOT</div></div>
-</div>
+        <div id="mobileControls">
+            <div id="movePad" class="touchPad">
+                <div id="moveKnob" class="knob"></div>
+                <div class="label">MOVE</div>
+            </div>
 
-<div id="overlay">
-<div class="start-card">
-<div class="start-left">
-<h1>BARK<br>STARS</h1>
-<h2>Reh Dogg’s Sudsy Squad</h2>
-<p>Blast grime monsters, collect tennis balls, and survive the backyard brawl.</p>
-<p>Use the loofah staff, dodge enemies, and keep Reh Dogg squeaky clean.</p>
-<div class="start-buttons">
-<button id="startBtn">▶ START BRAWL</button>
-<button id="howBtn">🎮 MOVE + SHOOT</button>
-</div>
-</div>
-<div class="start-right">
-<img src="rehdogg-hero.png" onerror="this.src='rehdogg-hero.PNG'" alt="Reh Dogg Hero">
-</div>
-</div>
-</div>
-</div>
+            <div id="shootPad" class="touchPad">
+                <div id="shootKnob" class="knob"></div>
+                <div class="label">SHOOT</div>
+            </div>
+        </div>
 
-<div id="hud">
-<div class="pill">🧼 Suds Score: <span id="score">0</span></div>
-<div class="pill">❤️ Health: <span id="health">5</span></div>
-<div class="pill">🎾 Balls: <span id="balls">0</span> / 8</div>
-<button id="restartBtn">Restart</button>
-</div>
+        <div id="overlay">
+            <div class="start-card">
+                <div class="start-left">
+                    <h1>BARK<br>STARS</h1>
+                    <h2>Reh Dogg’s Sudsy Squad</h2>
+                    <p>Blast grime monsters, collect tennis balls, and survive the backyard brawl.</p>
+                    <p>Use the loofah staff, dodge enemies, and keep Reh Dogg squeaky clean.</p>
+                    <div class="start-buttons">
+                        <button id="startBtn">▶ START BRAWL</button>
+                        <button id="howBtn">🎮 MOVE + SHOOT</button>
+                    </div>
+                </div>
+
+                <div class="start-right">
+                    <img src="rehdogg-hero.png" onerror="this.src='rehdogg-hero.PNG'" alt="Reh Dogg Hero">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="hud">
+        <div class="pill">🧼 Suds: <span id="score">0</span></div>
+        <div class="pill">❤️ Health: <span id="health">5</span></div>
+        <div class="pill">🎾 Balls: <span id="balls">0</span> / 8</div>
+        <button id="restartBtn">Restart</button>
+    </div>
 </div>
 
 <script>
@@ -89,24 +317,37 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #076b7a}
 const canvas=document.getElementById("game");
 const ctx=canvas.getContext("2d");
 const W=canvas.width,H=canvas.height;
+
 const scoreEl=document.getElementById("score");
 const healthEl=document.getElementById("health");
 const ballsEl=document.getElementById("balls");
 const overlay=document.getElementById("overlay");
+const gameBox=document.getElementById("gameBox");
+
+document.addEventListener("gesturestart",e=>e.preventDefault());
+document.addEventListener("gesturechange",e=>e.preventDefault());
+document.addEventListener("gestureend",e=>e.preventDefault());
+document.addEventListener("dblclick",e=>e.preventDefault(),{passive:false});
+gameBox.addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
 
 let audioCtx=null,soundReady=false;
+
 function unlockSound(){
     if(soundReady)return;
     audioCtx=new (window.AudioContext||window.webkitAudioContext)();
     soundReady=true;
     beep(440,.04,"square",.04);
 }
+
 function beep(freq=440,duration=.07,type="sine",volume=.05){
     if(!soundReady||!audioCtx)return;
     const osc=audioCtx.createOscillator();
     const gain=audioCtx.createGain();
-    osc.type=type;osc.frequency.value=freq;gain.gain.value=volume;
-    osc.connect(gain);gain.connect(audioCtx.destination);
+    osc.type=type;
+    osc.frequency.value=freq;
+    gain.gain.value=volume;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
     osc.start();
     gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);
     osc.stop(audioCtx.currentTime+duration);
@@ -115,25 +356,48 @@ function beep(freq=440,duration=.07,type="sine",volume=.05){
 let keys={},mouse={x:W/2,y:H/2,down:false};
 let player,bullets,enemies,balls,particles;
 let score=0,collected=0,running=false,spawnTimer=0,shootTimer=0,shake=0,gameStarted=false;
-const mobile={move:{active:false,dx:0,dy:0},shoot:{active:false,dx:1,dy:0}};
+
+const mobile={
+    move:{active:false,dx:0,dy:0},
+    shoot:{active:false,dx:1,dy:0}
+};
 
 function rand(min,max){return min+Math.random()*(max-min)}
 function distance(x1,y1,x2,y2){return Math.hypot(x1-x2,y1-y2)}
-function updateHud(){scoreEl.textContent=score;healthEl.textContent=player.hp;ballsEl.textContent=collected}
+
+function updateHud(){
+    scoreEl.textContent=score;
+    healthEl.textContent=player.hp;
+    ballsEl.textContent=collected;
+}
 
 function reset(){
     player={x:W/2,y:H/2,r:24,hp:5,maxHp:5,speed:4.7,inv:0,angle:0};
-    bullets=[];enemies=[];balls=[];particles=[];
-    score=0;collected=0;running=true;spawnTimer=0;shootTimer=0;shake=0;
+    bullets=[];
+    enemies=[];
+    balls=[];
+    particles=[];
+    score=0;
+    collected=0;
+    running=true;
+    spawnTimer=120;
+    shootTimer=0;
+    shake=0;
+
     for(let i=0;i<8;i++)spawnBall();
     for(let i=0;i<5;i++)spawnEnemy();
+
     updateHud();
 }
 
 function spawnBall(){
     let x,y,tries=0;
-    do{x=rand(60,W-60);y=rand(70,H-60);tries++}
-    while(distance(x,y,W/2,H/2)<130&&tries<100);
+    do{
+        x=rand(60,W-60);
+        y=rand(70,H-60);
+        tries++;
+    }while(distance(x,y,W/2,H/2)<130&&tries<100);
+
     balls.push({x,y,r:13,spin:Math.random()*10});
 }
 
@@ -142,6 +406,7 @@ function spawnEnemy(){
     let x=side===0?-30:side===1?W+30:rand(0,W);
     let y=side===2?-30:side===3?H+30:rand(0,H);
     let type=Math.random();
+
     enemies.push({
         x,y,
         r:18+Math.random()*16,
@@ -155,85 +420,181 @@ function spawnEnemy(){
 
 function shoot(tx,ty){
     if(!running||shootTimer>0)return;
-    let dx=tx-player.x,dy=ty-player.y,len=Math.hypot(dx,dy);
+
+    let dx=tx-player.x,dy=ty-player.y;
+    let len=Math.hypot(dx,dy);
     if(len<1)return;
-    dx/=len;dy/=len;player.angle=Math.atan2(dy,dx);
-    bullets.push({x:player.x+dx*32,y:player.y+dy*32,vx:dx*11,vy:dy*11,r:8,life:70});
+
+    dx/=len;
+    dy/=len;
+    player.angle=Math.atan2(dy,dx);
+
+    bullets.push({
+        x:player.x+dx*32,
+        y:player.y+dy*32,
+        vx:dx*11,
+        vy:dy*11,
+        r:8,
+        life:70
+    });
+
     shootTimer=8;
     beep(780,.035,"square",.035);
 }
 
 function burst(x,y,color,count=10){
     for(let i=0;i<count;i++){
-        let a=Math.random()*Math.PI*2,s=rand(1,5);
-        particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:rand(2,6),life:rand(18,35),color});
+        let a=Math.random()*Math.PI*2;
+        let s=rand(1,5);
+        particles.push({
+            x,y,
+            vx:Math.cos(a)*s,
+            vy:Math.sin(a)*s,
+            r:rand(2,6),
+            life:rand(18,35),
+            color
+        });
     }
 }
 
 function update(){
     if(!running)return;
+
     let mx=0,my=0;
+
     if(keys.ArrowUp||keys.w)my--;
     if(keys.ArrowDown||keys.s)my++;
     if(keys.ArrowLeft||keys.a)mx--;
     if(keys.ArrowRight||keys.d)mx++;
-    if(mobile.move.active){mx+=mobile.move.dx;my+=mobile.move.dy}
+
+    if(mobile.move.active){
+        mx+=mobile.move.dx;
+        my+=mobile.move.dy;
+    }
+
     let ml=Math.hypot(mx,my);
-    if(ml>0){mx/=ml;my/=ml;player.x+=mx*player.speed;player.y+=my*player.speed}
+
+    if(ml>0){
+        mx/=ml;
+        my/=ml;
+        player.x+=mx*player.speed;
+        player.y+=my*player.speed;
+    }
+
     player.x=Math.max(player.r,Math.min(W-player.r,player.x));
     player.y=Math.max(player.r,Math.min(H-player.r,player.y));
+
     if(player.inv>0)player.inv--;
     if(shootTimer>0)shootTimer--;
     if(shake>0)shake--;
-    if(mouse.down)shoot(mouse.x,mouse.y);
-    if(mobile.shoot.active)shoot(player.x+mobile.shoot.dx*150,player.y+mobile.shoot.dy*150);
 
-    bullets.forEach(b=>{b.x+=b.vx;b.y+=b.vy;b.life--});
+    if(mouse.down)shoot(mouse.x,mouse.y);
+
+    if(mobile.shoot.active){
+        shoot(player.x+mobile.shoot.dx*150,player.y+mobile.shoot.dy*150);
+    }
+
+    bullets.forEach(b=>{
+        b.x+=b.vx;
+        b.y+=b.vy;
+        b.life--;
+    });
+
     bullets=bullets.filter(b=>b.life>0&&b.x>-40&&b.x<W+40&&b.y>-40&&b.y<H+40);
 
     enemies.forEach(e=>{
         e.wobble+=.1;
-        let dx=player.x-e.x,dy=player.y-e.y,l=Math.hypot(dx,dy)||1;
+
+        let dx=player.x-e.x;
+        let dy=player.y-e.y;
+        let l=Math.hypot(dx,dy)||1;
+
         e.x+=dx/l*e.speed+Math.sin(e.wobble)*.35;
         e.y+=dy/l*e.speed+Math.cos(e.wobble)*.35;
+
         if(distance(e.x,e.y,player.x,player.y)<e.r+player.r&&player.inv<=0){
-            player.hp--;player.inv=50;shake=12;
+            player.hp--;
+            player.inv=50;
+            shake=12;
+
             beep(120,.12,"sawtooth",.08);
             burst(player.x,player.y,"#ff3f6c",18);
+
             let a=Math.atan2(player.y-e.y,player.x-e.x);
-            player.x+=Math.cos(a)*45;player.y+=Math.sin(a)*45;
-            if(player.hp<=0){running=false;showEnd("💔 SCRUBBED OUT","The grime monsters got Reh Dogg. Hit restart and run it back.")}
+            player.x+=Math.cos(a)*45;
+            player.y+=Math.sin(a)*45;
+
+            if(player.hp<=0){
+                running=false;
+                showEnd("💔 SCRUBBED OUT","The grime monsters got Reh Dogg. Hit restart and run it back.");
+            }
+
             updateHud();
         }
     });
 
     for(let i=bullets.length-1;i>=0;i--){
         let b=bullets[i];
+
         for(let j=enemies.length-1;j>=0;j--){
             let e=enemies[j];
+
             if(distance(b.x,b.y,e.x,e.y)<b.r+e.r){
-                bullets.splice(i,1);e.hp--;
+                bullets.splice(i,1);
+                e.hp--;
+
                 burst(b.x,b.y,"#c9f7ff",8);
                 beep(520,.04,"triangle",.045);
-                if(e.hp<=0){enemies.splice(j,1);score+=10;burst(e.x,e.y,"#7cff8b",18);beep(220,.06,"square",.05);updateHud()}
+
+                if(e.hp<=0){
+                    enemies.splice(j,1);
+                    score+=10;
+                    burst(e.x,e.y,"#7cff8b",18);
+                    beep(220,.06,"square",.05);
+                    updateHud();
+                }
+
                 break;
             }
         }
     }
 
     for(let i=balls.length-1;i>=0;i--){
-        let b=balls[i];b.spin+=.08;
+        let b=balls[i];
+        b.spin+=.08;
+
         if(distance(player.x,player.y,b.x,b.y)<player.r+b.r){
-            balls.splice(i,1);collected++;score+=25;
-            burst(b.x,b.y,"#ffda44",16);beep(980,.08,"sine",.07);
+            balls.splice(i,1);
+            collected++;
+            score+=25;
+
+            burst(b.x,b.y,"#ffda44",16);
+            beep(980,.08,"sine",.07);
+
             updateHud();
-            if(collected>=8){running=false;showEnd("🏆 SQUEAKY CLEAN WIN","Reh Dogg collected every tennis ball and cleaned the arena.")}
+
+            if(collected>=8){
+                running=false;
+                showEnd("🏆 SQUEAKY CLEAN WIN","Reh Dogg collected every tennis ball and cleaned the arena.");
+            }
         }
     }
 
     spawnTimer--;
-    if(spawnTimer<=0&&enemies.length<10){spawnEnemy();spawnTimer=120}
-    particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=.94;p.vy*=.94;p.life--});
+
+    if(spawnTimer<=0&&enemies.length<10){
+        spawnEnemy();
+        spawnTimer=120;
+    }
+
+    particles.forEach(p=>{
+        p.x+=p.vx;
+        p.y+=p.vy;
+        p.vx*=.94;
+        p.vy*=.94;
+        p.life--;
+    });
+
     particles=particles.filter(p=>p.life>0);
 }
 
@@ -241,146 +602,403 @@ function showEnd(title,message){
     overlay.style.display="flex";
     overlay.innerHTML=`
     <div class="start-card">
-      <div class="start-left">
-        <h1>${title}</h1>
-        <h2>Bark Stars Result</h2>
-        <p>${message}</p>
-        <div class="start-buttons"><button id="playAgainBtn">🔁 PLAY AGAIN</button></div>
-      </div>
-      <div class="start-right"><img src="rehdogg-hero.png" onerror="this.src='rehdogg-hero.PNG'" alt="Reh Dogg Hero"></div>
+        <div class="start-left">
+            <h1>${title}</h1>
+            <h2>Bark Stars Result</h2>
+            <p>${message}</p>
+            <div class="start-buttons">
+                <button id="playAgainBtn">🔁 PLAY AGAIN</button>
+            </div>
+        </div>
+        <div class="start-right">
+            <img src="rehdogg-hero.png" onerror="this.src='rehdogg-hero.PNG'" alt="Reh Dogg Hero">
+        </div>
     </div>`;
-    document.getElementById("playAgainBtn").onclick=()=>{unlockSound();overlay.style.display="none";reset()};
+
+    document.getElementById("playAgainBtn").onclick=()=>{
+        unlockSound();
+        overlay.style.display="none";
+        reset();
+    };
 }
 
 function drawArena(){
     let g=ctx.createLinearGradient(0,0,W,H);
-    g.addColorStop(0,"#216b7a");g.addColorStop(.5,"#123b48");g.addColorStop(1,"#08242e");
-    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-    ctx.strokeStyle="rgba(255,255,255,.08)";ctx.lineWidth=2;
-    for(let x=0;x<W;x+=50){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
-    for(let y=0;y<H;y+=50){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+    g.addColorStop(0,"#216b7a");
+    g.addColorStop(.5,"#123b48");
+    g.addColorStop(1,"#08242e");
+
+    ctx.fillStyle=g;
+    ctx.fillRect(0,0,W,H);
+
+    ctx.strokeStyle="rgba(255,255,255,.08)";
+    ctx.lineWidth=2;
+
+    for(let x=0;x<W;x+=50){
+        ctx.beginPath();
+        ctx.moveTo(x,0);
+        ctx.lineTo(x,H);
+        ctx.stroke();
+    }
+
+    for(let y=0;y<H;y+=50){
+        ctx.beginPath();
+        ctx.moveTo(0,y);
+        ctx.lineTo(W,y);
+        ctx.stroke();
+    }
+
     ctx.fillStyle="#174b35";
-    for(let i=0;i<12;i++){ctx.fillRect((i*173)%W,(i*97)%H,80,42)}
+
+    for(let i=0;i<12;i++){
+        ctx.fillRect((i*173)%W,(i*97)%H,80,42);
+    }
+
     ctx.fillStyle="rgba(255,211,77,.15)";
-    ctx.beginPath();ctx.arc(W/2,H/2,120,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();
+    ctx.arc(W/2,H/2,120,0,Math.PI*2);
+    ctx.fill();
+
     let vignette=ctx.createRadialGradient(W/2,H/2,200,W/2,H/2,600);
     vignette.addColorStop(0,"rgba(0,0,0,0)");
     vignette.addColorStop(1,"rgba(0,0,0,0.5)");
-    ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=vignette;
+    ctx.fillRect(0,0,W,H);
 }
 
 function drawPlayer(){
     ctx.save();
-    ctx.shadowColor = "#00ffff"; ctx.shadowBlur = 20;
-    ctx.translate(player.x,player.y);ctx.rotate(player.angle);
-    if(player.inv>0&&Math.floor(player.inv/5)%2===0)ctx.globalAlpha=.45;
+
+    ctx.shadowColor="#00ffff";
+    ctx.shadowBlur=20;
+
+    ctx.translate(player.x,player.y);
+    ctx.rotate(player.angle);
+
+    if(player.inv>0&&Math.floor(player.inv/5)%2===0){
+        ctx.globalAlpha=.45;
+    }
+
     ctx.fillStyle="rgba(185,230,240,.7)";
-    ctx.beginPath();ctx.moveTo(-20,-5);ctx.lineTo(-44,30);ctx.lineTo(26,28);ctx.lineTo(15,-12);ctx.closePath();ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(-20,-5);
+    ctx.lineTo(-44,30);
+    ctx.lineTo(26,28);
+    ctx.lineTo(15,-12);
+    ctx.closePath();
+    ctx.fill();
+
     ctx.fillStyle="#ffcc33";
-    ctx.beginPath();ctx.ellipse(-9,18,9,6,0,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.ellipse(12,18,9,6,0,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="#8b5a2b";ctx.beginPath();ctx.arc(0,0,22,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="#f6a6cf";ctx.beginPath();ctx.ellipse(0,-20,19,10,0,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle="#050505";ctx.lineWidth=3;
-    ctx.beginPath();ctx.arc(-8,-5,6,0,Math.PI*2);ctx.stroke();
-    ctx.beginPath();ctx.arc(8,-5,6,0,Math.PI*2);ctx.stroke();
-    ctx.fillStyle="#e6b422";for(let x=-7;x<=7;x+=4)ctx.fillRect(x,7,3,5);
-    ctx.strokeStyle="#8b5520";ctx.lineWidth=6;
-    ctx.beginPath();ctx.moveTo(17,2);ctx.lineTo(52,2);ctx.stroke();
-    ctx.fillStyle="#79e15c";ctx.beginPath();ctx.arc(62,2,13,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(-9,18,9,6,0,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.ellipse(12,18,9,6,0,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle="#8b5a2b";
+    ctx.beginPath();
+    ctx.arc(0,0,22,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle="#f6a6cf";
+    ctx.beginPath();
+    ctx.ellipse(0,-20,19,10,0,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.strokeStyle="#050505";
+    ctx.lineWidth=3;
+
+    ctx.beginPath();
+    ctx.arc(-8,-5,6,0,Math.PI*2);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(8,-5,6,0,Math.PI*2);
+    ctx.stroke();
+
+    ctx.fillStyle="#e6b422";
+
+    for(let x=-7;x<=7;x+=4){
+        ctx.fillRect(x,7,3,5);
+    }
+
+    ctx.strokeStyle="#8b5520";
+    ctx.lineWidth=6;
+
+    ctx.beginPath();
+    ctx.moveTo(17,2);
+    ctx.lineTo(52,2);
+    ctx.stroke();
+
+    ctx.fillStyle="#79e15c";
+    ctx.beginPath();
+    ctx.arc(62,2,13,0,Math.PI*2);
+    ctx.fill();
+
     ctx.restore();
 }
 
 function drawEnemy(e){
-    ctx.save();ctx.translate(e.x,e.y);
-    if(e.hp<e.maxHp)ctx.globalAlpha=.7;
-    ctx.fillStyle=e.color;ctx.beginPath();ctx.arc(0,0,e.r,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="rgba(0,0,0,.35)";ctx.beginPath();ctx.ellipse(0,e.r-2,e.r*.8,6,0,0,Math.PI*2);ctx.fill();
+    ctx.save();
+    ctx.translate(e.x,e.y);
+
+    if(e.hp<e.maxHp){
+        ctx.globalAlpha=.7;
+    }
+
+    ctx.fillStyle=e.color;
+    ctx.beginPath();
+    ctx.arc(0,0,e.r,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle="rgba(0,0,0,.35)";
+    ctx.beginPath();
+    ctx.ellipse(0,e.r-2,e.r*.8,6,0,0,Math.PI*2);
+    ctx.fill();
+
     ctx.fillStyle="#000";
-    ctx.beginPath();ctx.moveTo(-10,-8);ctx.lineTo(-2,-4);ctx.lineTo(-10,-2);ctx.fill();
-    ctx.beginPath();ctx.moveTo(10,-8);ctx.lineTo(2,-4);ctx.lineTo(10,-2);ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(-10,-8);
+    ctx.lineTo(-2,-4);
+    ctx.lineTo(-10,-2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(10,-8);
+    ctx.lineTo(2,-4);
+    ctx.lineTo(10,-2);
+    ctx.fill();
+
     ctx.fillStyle="#ff3f3f";
-    ctx.beginPath();ctx.arc(-6,-4,2,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(6,-4,2,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="#fff";ctx.fillRect(-8,6,16,5);
-    ctx.fillStyle="#000";for(let i=-6;i<=6;i+=4)ctx.fillRect(i,6,1,5);
-    ctx.fillStyle="#000";ctx.fillRect(-e.r,-e.r-10,e.r*2,5);
-    ctx.fillStyle="#ff3f6c";ctx.fillRect(-e.r,-e.r-10,(e.hp/e.maxHp)*e.r*2,5);
+
+    ctx.beginPath();
+    ctx.arc(-6,-4,2,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(6,-4,2,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle="#fff";
+    ctx.fillRect(-8,6,16,5);
+
+    ctx.fillStyle="#000";
+
+    for(let i=-6;i<=6;i+=4){
+        ctx.fillRect(i,6,1,5);
+    }
+
+    ctx.fillStyle="#000";
+    ctx.fillRect(-e.r,-e.r-10,e.r*2,5);
+
+    ctx.fillStyle="#ff3f6c";
+    ctx.fillRect(-e.r,-e.r-10,(e.hp/e.maxHp)*e.r*2,5);
+
     ctx.restore();
 }
 
 function draw(){
     ctx.save();
-    if(shake>0)ctx.translate(rand(-shake,shake),rand(-shake,shake));
+
+    if(shake>0){
+        ctx.translate(rand(-shake,shake),rand(-shake,shake));
+    }
+
     drawArena();
+
     balls.forEach(b=>{
-        ctx.save();ctx.translate(b.x,b.y);ctx.rotate(b.spin);
-        ctx.fillStyle="#ffda44";ctx.beginPath();ctx.arc(0,0,b.r,0,Math.PI*2);ctx.fill();
-        ctx.strokeStyle="#fff3a0";ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,b.r-4,-1.2,1.2);ctx.stroke();
+        ctx.save();
+        ctx.translate(b.x,b.y);
+        ctx.rotate(b.spin);
+
+        ctx.fillStyle="#ffda44";
+        ctx.beginPath();
+        ctx.arc(0,0,b.r,0,Math.PI*2);
+        ctx.fill();
+
+        ctx.strokeStyle="#fff3a0";
+        ctx.lineWidth=3;
+        ctx.beginPath();
+        ctx.arc(0,0,b.r-4,-1.2,1.2);
+        ctx.stroke();
+
         ctx.restore();
     });
+
     enemies.forEach(drawEnemy);
+
     bullets.forEach(b=>{
-        ctx.fillStyle="#d8fbff";ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle="rgba(255,255,255,.8)";ctx.beginPath();ctx.arc(b.x-3,b.y-3,3,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle="#d8fbff";
+        ctx.beginPath();
+        ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+        ctx.fill();
+
+        ctx.fillStyle="rgba(255,255,255,.8)";
+        ctx.beginPath();
+        ctx.arc(b.x-3,b.y-3,3,0,Math.PI*2);
+        ctx.fill();
     });
-    if(player)drawPlayer();
+
+    if(player){
+        drawPlayer();
+    }
+
     particles.forEach(p=>{
-        ctx.globalAlpha=Math.max(0,p.life/35);ctx.fillStyle=p.color;
-        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+        ctx.globalAlpha=Math.max(0,p.life/35);
+        ctx.fillStyle=p.color;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+        ctx.globalAlpha=1;
     });
+
     ctx.restore();
 }
 
-function loop(){update();draw();requestAnimationFrame(loop)}
-function canvasPos(e){
-    const r=canvas.getBoundingClientRect();
-    return {x:(e.clientX-r.left)*(canvas.width/r.width),y:(e.clientY-r.top)*(canvas.height/r.height)};
+function loop(){
+    update();
+    draw();
+    requestAnimationFrame(loop);
 }
 
-window.addEventListener("keydown",e=>{unlockSound();keys[e.key]=true});
-window.addEventListener("keyup",e=>{keys[e.key]=false});
-canvas.addEventListener("mousemove",e=>{const p=canvasPos(e);mouse.x=p.x;mouse.y=p.y});
-canvas.addEventListener("mousedown",e=>{unlockSound();const p=canvasPos(e);mouse.x=p.x;mouse.y=p.y;mouse.down=true});
-window.addEventListener("mouseup",()=>{mouse.down=false});
+function canvasPos(e){
+    const r=canvas.getBoundingClientRect();
+
+    return {
+        x:(e.clientX-r.left)*(canvas.width/r.width),
+        y:(e.clientY-r.top)*(canvas.height/r.height)
+    };
+}
+
+window.addEventListener("keydown",e=>{
+    unlockSound();
+    keys[e.key]=true;
+});
+
+window.addEventListener("keyup",e=>{
+    keys[e.key]=false;
+});
+
+canvas.addEventListener("mousemove",e=>{
+    const p=canvasPos(e);
+    mouse.x=p.x;
+    mouse.y=p.y;
+});
+
+canvas.addEventListener("mousedown",e=>{
+    unlockSound();
+    const p=canvasPos(e);
+    mouse.x=p.x;
+    mouse.y=p.y;
+    mouse.down=true;
+});
+
+window.addEventListener("mouseup",()=>{
+    mouse.down=false;
+});
 
 function setupPad(id,knobId,type){
-    const pad=document.getElementById(id),knob=document.getElementById(knobId);
+    const pad=document.getElementById(id);
+    const knob=document.getElementById(knobId);
+
     function updatePad(e){
-        const r=pad.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
-        let dx=e.clientX-cx,dy=e.clientY-cy,len=Math.hypot(dx,dy),max=38;
-        if(len>max){dx=dx/len*max;dy=dy/len*max}
-        knob.style.left=(38+dx)+"px";knob.style.top=(38+dy)+"px";
-        mobile[type].dx=dx/max;mobile[type].dy=dy/max;
+        const r=pad.getBoundingClientRect();
+        const cx=r.left+r.width/2;
+        const cy=r.top+r.height/2;
+
+        let dx=e.clientX-cx;
+        let dy=e.clientY-cy;
+        let len=Math.hypot(dx,dy);
+        const max=30;
+
+        if(len>max){
+            dx=dx/len*max;
+            dy=dy/len*max;
+        }
+
+        knob.style.left=(28+dx)+"px";
+        knob.style.top=(28+dy)+"px";
+
+        mobile[type].dx=dx/max;
+        mobile[type].dy=dy/max;
     }
-    pad.addEventListener("pointerdown",e=>{e.preventDefault();unlockSound();try{pad.setPointerCapture(e.pointerId)}catch(err){}mobile[type].active=true;updatePad(e)});
-    pad.addEventListener("pointermove",e=>{if(!mobile[type].active)return;e.preventDefault();updatePad(e)});
+
+    pad.addEventListener("pointerdown",e=>{
+        e.preventDefault();
+        unlockSound();
+
+        try{
+            pad.setPointerCapture(e.pointerId);
+        }catch(err){}
+
+        mobile[type].active=true;
+        updatePad(e);
+    });
+
+    pad.addEventListener("pointermove",e=>{
+        if(!mobile[type].active)return;
+        e.preventDefault();
+        updatePad(e);
+    });
+
     function release(e){
         if(e)e.preventDefault();
-        mobile[type].active=false;knob.style.left="38px";knob.style.top="38px";
-        if(type==="shoot"){mobile.shoot.dx=1;mobile.shoot.dy=0}else{mobile.move.dx=0;mobile.move.dy=0}
+
+        mobile[type].active=false;
+        knob.style.left="28px";
+        knob.style.top="28px";
+
+        if(type==="shoot"){
+            mobile.shoot.dx=1;
+            mobile.shoot.dy=0;
+        }else{
+            mobile.move.dx=0;
+            mobile.move.dy=0;
+        }
     }
+
     pad.addEventListener("pointerup",release);
     pad.addEventListener("pointercancel",release);
     pad.addEventListener("lostpointercapture",release);
 }
+
 setupPad("movePad","moveKnob","move");
 setupPad("shootPad","shootKnob","shoot");
 
 document.getElementById("startBtn").onclick=()=>{
-    unlockSound();overlay.style.display="none";reset();
-    if(!gameStarted){gameStarted=true;loop()}
+    unlockSound();
+    overlay.style.display="none";
+    reset();
+
+    if(!gameStarted){
+        gameStarted=true;
+        loop();
+    }
 };
+
 document.getElementById("howBtn").onclick=()=>{
     alert("Desktop: WASD or arrows to move. Mouse to aim. Hold click to shoot. Mobile: left pad moves. Right pad aims and shoots.");
 };
+
 document.getElementById("restartBtn").onclick=()=>{
-    unlockSound();overlay.style.display="none";reset();
-    if(!gameStarted){gameStarted=true;loop()}
+    unlockSound();
+    overlay.style.display="none";
+    reset();
+
+    if(!gameStarted){
+        gameStarted=true;
+        loop();
+    }
 };
 
-ctx.fillStyle="#123b48";ctx.fillRect(0,0,W,H);
-ctx.fillStyle="#ffda44";ctx.font="bold 42px Arial";ctx.textAlign="center";
+ctx.fillStyle="#123b48";
+ctx.fillRect(0,0,W,H);
+ctx.fillStyle="#ffda44";
+ctx.font="bold 42px Arial";
+ctx.textAlign="center";
 ctx.fillText("PRESS START BRAWL",W/2,H/2);
 })();
 </script>
