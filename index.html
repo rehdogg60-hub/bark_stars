@@ -980,8 +980,13 @@ if(!CanvasRenderingContext2D.prototype.roundRect){
     };
 }
 
-draw();
-loop();
+ctx.fillStyle = "#123b48";
+ctx.fillRect(0, 0, W, H);
+
+ctx.fillStyle = "#ffda44";
+ctx.font = "bold 42px Arial";
+ctx.textAlign = "center";
+ctx.fillText("PRESS START BRAWL", W/2, H/2);
 })();
 </script>
 
