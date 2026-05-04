@@ -748,7 +748,9 @@ function drawPlayer(){
     ctx.restore();
 }
 
-function drawEnemy(e){
+function drawEnemy(e)if(e.hp < e.maxHp){
+    ctx.globalAlpha = 0.6 + Math.random() * 0.4;
+}{
     ctx.save();
     ctx.translate(e.x, e.y);
 
