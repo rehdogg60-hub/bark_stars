@@ -260,7 +260,9 @@ function drawArena(){
 }
 
 function drawPlayer(){
-    ctx.save();ctx.translate(player.x,player.y);ctx.rotate(player.angle);
+    ctx.save();
+    ctx.shadowColor = "#00ffff"; ctx.shadowBlur = 20;
+    ctx.translate(player.x,player.y);ctx.rotate(player.angle);
     if(player.inv>0&&Math.floor(player.inv/5)%2===0)ctx.globalAlpha=.45;
     ctx.fillStyle="rgba(185,230,240,.7)";
     ctx.beginPath();ctx.moveTo(-20,-5);ctx.lineTo(-44,30);ctx.lineTo(26,28);ctx.lineTo(15,-12);ctx.closePath();ctx.fill();
