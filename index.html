@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bark Stars | Reh Dogg's Sudsy Squad</title>
+    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .w3-margin > a, .w3-margin > p, .w3-margin > table {
+            font-size: 1.2rem;
+        }
+        .role {
+            font-size: 1rem;
+        }
+        body {
+            background: #f0f8ff;
+        }
+        .bark-header {
+            background: linear-gradient(135deg, #2e6c80, #1e4a5f);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 12px;
+        }
+        .reh-quote {
+            font-style: italic;
+            background: #ffe0b5;
+            padding: 8px 12px;
+            border-left: 6px solid #ffb347;
+            margin: 16px 0;
+        }
+        .gold-tooth {
+            color: #ffd966;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="w3-bar w3-border-bottom w3-white">
+        <a class="w3-bar-item w3-button" href="/"><span style="color: black;">BARK</span> <b style="color: #2e6c80;">STARS</b></a>
+        <a class="w3-bar-item w3-button w3-text-black" href="/news">Sudsy News</a>
+        <a class="w3-bar-item w3-button w3-text-black" href="/curriculum">Shower Schedule</a>
+        <a class="w3-bar-item w3-button w3-text-black" href="/forum">Loofah Forum</a>
+        <a class="w3-bar-item w3-button w3-text-black" href="/product">Reh-skins</a>
+        <a class="w3-bar-item w3-button w3-text-black w3-right" href="/me"><i class="fas fa-user-circle" style="font-size: 1.5rem;"></i></a>
+    </div>
+
+    <div class="w3-margin">
+        <div class="bark-header w3-padding">
+            <h2>🧼 吠星亂鬥 <strong>Bark Stars</strong></h2>
+            <p>✨ starring <strong>Reh Dogg</strong> – gold-toothed loofah legend ✨</p>
+        </div>
+
+        <p><a href="#" style="background:#2e6c80; color:white; padding:4px 12px; border-radius:20px; text-decoration:none;">🚿 JOIN REH'S SUDSY SQUAD 🧽</a></p>
+
+        <p id="sudsScore" style="color: #2e6c80; font-weight: bold;"></p>
+        <p id="onlineMembers" style="color: green;"></p>
+
+        <div id="list"></div>
+
+        <div class="reh-quote">
+            <i class="fas fa-dog"></i> <strong>Reh Dogg says:</strong> “I let you join my club. You're welcome. Don't slip.”
+            <span class="gold-tooth">🦷✨</span>
+        </div>
+    </div>
+</div>
+
+<script>
+const clubMock = {
+    sudsScore: 28490,
+    onlineMembers: 12,
+    membersCount: 28,
+    members: [
+        { name: "🧼 Reh Dogg", trophies: 12450, role: "Shower Captain 👑" },
+        { name: "🎧 DJ Reh Dogg", trophies: 11200, role: "Beat Dropper" },
+        { name: "🥷 Ninja Reh", trophies: 9870, role: "Silent Squeaker" },
+        { name: "🚀 Astronaut Reh", trophies: 8950, role: "Zero-G Loofah" },
+        { name: "🧽 Mop Dogg", trophies: 7640, role: "Swamp Cleaner" }
+    ]
+};
+
+document.getElementById("sudsScore").innerHTML = "🧼 Total Suds: " + clubMock.sudsScore;
+document.getElementById("onlineMembers").innerHTML =
+"🚿 Online: " + clubMock.onlineMembers + " / " + clubMock.membersCount;
+
+function listMembers(members) {
+    let container = document.getElementById("list");
+
+    let table = document.createElement("table");
+    table.className = "w3-table w3-striped w3-border";
+
+    members.forEach((m, i) => {
+        let row = `<tr>
+            <td>${i+1}</td>
+            <td>${m.name}</td>
+            <td>${m.role}</td>
+            <td>${m.trophies} suds</td>
+        </tr>`;
+        table.innerHTML += row;
+    });
+
+    container.appendChild(table);
+}
+
+listMembers(clubMock.members);
+</script>
+</body>
+</html>
