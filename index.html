@@ -948,10 +948,19 @@ function setupPad(id,knobId,type){
 setupPad("movePad","moveKnob","move");
 setupPad("shootPad","shootKnob","shoot");
 
+let gameStarted = false;
+
 document.getElementById("startBtn").onclick = () => {
     unlockSound();
     overlay.style.display = "none";
+
     reset();
+
+    if (!gameStarted) {
+        gameStarted = true;
+        loop();
+    }
+};
 };
 
 document.getElementById("howBtn").onclick = () => {
