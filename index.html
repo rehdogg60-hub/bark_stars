@@ -1,39 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Bark Stars | Reh Dogg Games Plus</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;user-select:none}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    user-select:none;
+}
+
+html, body, canvas, #gameBox, #mobileControls, .touchPad{
+    touch-action:none;
+}
+
 body{
     min-height:100vh;
-    background:radial-gradient(circle at top,#13485c,#061821 70%);
+    background:radial-gradient(circle at top,#15586b,#061821 70%);
     display:flex;
     align-items:center;
     justify-content:center;
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:Arial, Helvetica, sans-serif;
     color:white;
     overflow:hidden;
 }
+
 #wrap{
     width:min(100vw,1100px);
     padding:10px;
 }
+
 #gameBox{
     position:relative;
     background:#082631;
-    border:5px solid #ffd34d;
-    border-radius:26px;
+    border:5px solid #ffda44;
+    border-radius:28px;
     overflow:hidden;
     box-shadow:0 25px 70px rgba(0,0,0,.65);
 }
+
 canvas{
     width:100%;
     height:auto;
     display:block;
     background:#111;
 }
+
 #hud{
     display:flex;
     gap:10px;
@@ -45,12 +60,14 @@ canvas{
     font-weight:900;
     flex-wrap:wrap;
 }
+
 .pill{
     background:white;
     border:3px solid #102b35;
     border-radius:999px;
     padding:6px 12px;
 }
+
 button{
     border:none;
     border-radius:999px;
@@ -61,37 +78,93 @@ button{
     cursor:pointer;
     box-shadow:0 4px 0 #076b7a;
 }
-button:active{transform:translateY(3px);box-shadow:0 1px 0 #076b7a}
+
+button:active{
+    transform:translateY(3px);
+    box-shadow:0 1px 0 #076b7a;
+}
+
 #overlay{
     position:absolute;
     inset:0;
     display:flex;
-    flex-direction:column;
     align-items:center;
     justify-content:center;
-    text-align:center;
-    background:linear-gradient(rgba(3,12,17,.88),rgba(3,12,17,.92));
+    background:
+      linear-gradient(rgba(4,16,22,.72),rgba(4,16,22,.94)),
+      radial-gradient(circle at center,#1d6b80,#061821 70%);
     z-index:5;
-    padding:25px;
+    padding:24px;
 }
-#overlay h1{
-    font-size:clamp(2rem,7vw,5rem);
+
+.start-card{
+    width:min(94%,850px);
+    min-height:460px;
+    border:6px solid #ffda44;
+    border-radius:34px;
+    background:linear-gradient(145deg,#082631,#0d3b4a);
+    box-shadow:0 20px 50px rgba(0,0,0,.65);
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    overflow:hidden;
+}
+
+.start-left{
+    padding:28px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    text-align:left;
+}
+
+.start-left h1{
+    font-size:clamp(2.4rem,7vw,4.8rem);
     color:#ffda44;
     text-shadow:4px 4px #000;
+    line-height:.95;
 }
-#overlay p{
-    max-width:680px;
-    margin:12px auto;
-    font-size:1.05rem;
-    line-height:1.45;
-}
-#startBtn{
-    margin-top:20px;
+
+.start-left h2{
+    color:#1de0ff;
+    margin:10px 0 14px;
     font-size:1.2rem;
+}
+
+.start-left p{
+    font-size:1rem;
+    line-height:1.45;
+    margin-bottom:12px;
+}
+
+.start-buttons{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:10px;
+}
+
+.start-right{
+    position:relative;
+    background:radial-gradient(circle,#ffffff22,#00000000 65%);
+    display:flex;
+    align-items:end;
+    justify-content:center;
+}
+
+.start-right img{
+    width:95%;
+    max-height:440px;
+    object-fit:contain;
+    filter:drop-shadow(0 18px 18px rgba(0,0,0,.65));
+}
+
+#startBtn{
+    font-size:1.1rem;
     background:#ff3f6c;
     color:white;
     box-shadow:0 5px 0 #8f1633;
 }
+
 #mobileControls{
     display:none;
     position:absolute;
@@ -99,6 +172,7 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #076b7a}
     pointer-events:none;
     z-index:4;
 }
+
 .touchPad{
     position:absolute;
     bottom:22px;
@@ -109,8 +183,10 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #076b7a}
     border:3px solid rgba(255,255,255,.45);
     pointer-events:auto;
 }
-#movePad{left:22px}
-#shootPad{right:22px}
+
+#movePad{left:22px;}
+#shootPad{right:22px;}
+
 .knob{
     position:absolute;
     left:38px;
@@ -121,6 +197,7 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #076b7a}
     background:#ffda44;
     border:3px solid #222;
 }
+
 .label{
     position:absolute;
     width:100%;
@@ -129,13 +206,36 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #076b7a}
     font-weight:900;
     font-size:.75rem;
 }
+
 @media(max-width:800px){
-    #mobileControls{display:block}
-    #hud{font-size:.8rem}
+    #mobileControls{display:block;}
+    #hud{font-size:.8rem;}
+}
+
+@media(max-width:750px){
+    .start-card{
+        grid-template-columns:1fr;
+        min-height:auto;
+    }
+
+    .start-left{
+        text-align:center;
+        padding:22px;
+    }
+
+    .start-right img{
+        max-height:300px;
+    }
+
+    .start-buttons{
+        justify-content:center;
+    }
 }
 </style>
 </head>
+
 <body>
+
 <div id="wrap">
     <div id="gameBox">
         <canvas id="game" width="1000" height="650"></canvas>
@@ -145,6 +245,7 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #076b7a}
                 <div id="moveKnob" class="knob"></div>
                 <div class="label">MOVE</div>
             </div>
+
             <div id="shootPad" class="touchPad">
                 <div id="shootKnob" class="knob"></div>
                 <div class="label">SHOOT</div>
@@ -152,15 +253,23 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #076b7a}
         </div>
 
         <div id="overlay">
-            <h1>🧼 BARK STARS</h1>
-            <p>
-                Reh Dogg enters the Sudsy Arena with gold teeth, shower booties,
-                a shower curtain cape, and a loofah staff. Collect all tennis balls,
-                blast grime monsters, and survive the backyard brawl.
-            </p>
-            <p><b>Desktop:</b> WASD or arrows to move. Mouse to aim. Hold click to shoot.</p>
-            <p><b>Mobile:</b> left pad moves, right pad aims and shoots.</p>
-            <button id="startBtn">START BRAWL</button>
+            <div class="start-card">
+                <div class="start-left">
+                    <h1>BARK<br>STARS</h1>
+                    <h2>Reh Dogg’s Sudsy Squad</h2>
+                    <p>Blast grime monsters, collect tennis balls, and survive the backyard brawl.</p>
+                    <p>Use the loofah staff, dodge enemies, and keep Reh Dogg squeaky clean.</p>
+
+                    <div class="start-buttons">
+                        <button id="startBtn">▶ START BRAWL</button>
+                        <button id="howBtn">🎮 MOVE + SHOOT</button>
+                    </div>
+                </div>
+
+                <div class="start-right">
+                    <img src="rehdogg-hero.png" alt="Reh Dogg Bark Stars Hero">
+                </div>
+            </div>
         </div>
     </div>
 
@@ -221,18 +330,36 @@ let shootTimer = 0;
 let shake = 0;
 
 const mobile = {
-    move:{active:false,x:0,y:0,dx:0,dy:0},
-    shoot:{active:false,x:0,y:0,dx:1,dy:0}
+    move:{active:false,dx:0,dy:0},
+    shoot:{active:false,dx:1,dy:0}
 };
+
+function rand(min,max){
+    return min + Math.random() * (max-min);
+}
+
+function distance(x1,y1,x2,y2){
+    return Math.hypot(x1-x2,y1-y2);
+}
+
+function updateHud(){
+    scoreEl.textContent = score;
+    healthEl.textContent = player.hp;
+    ballsEl.textContent = collected;
+}
 
 function reset(){
     player = {
-        x:W/2,y:H/2,r:24,
-        hp:5,maxHp:5,
+        x:W/2,
+        y:H/2,
+        r:24,
+        hp:5,
+        maxHp:5,
         speed:4.7,
         inv:0,
         angle:0
     };
+
     bullets = [];
     enemies = [];
     balls = [];
@@ -251,50 +378,55 @@ function reset(){
     updateHud();
 }
 
-function updateHud(){
-    scoreEl.textContent = score;
-    healthEl.textContent = player.hp;
-    ballsEl.textContent = collected;
-}
-
-function rand(min,max){return min + Math.random()*(max-min)}
-function dist(a,b,c,d){return Math.hypot(a-c,b-d)}
-
 function spawnBall(){
     let x,y,tries=0;
+
     do{
-        x=rand(60,W-60);
-        y=rand(70,H-60);
+        x = rand(60,W-60);
+        y = rand(70,H-60);
         tries++;
-    }while(dist(x,y,W/2,H/2)<130 && tries<100);
-    balls.push({x,y,r:13,spin:Math.random()*10});
+    }while(distance(x,y,W/2,H/2)<130 && tries<100);
+
+    balls.push({
+        x:x,
+        y:y,
+        r:13,
+        spin:Math.random()*10
+    });
 }
 
 function spawnEnemy(){
     let side = Math.floor(Math.random()*4);
+
     let x = side===0 ? -30 : side===1 ? W+30 : rand(0,W);
     let y = side===2 ? -30 : side===3 ? H+30 : rand(0,H);
+
     let type = Math.random();
 
     enemies.push({
-        x,y,
+        x:x,
+        y:y,
         r:type>.75?28:22,
-        hp:type>.75?3: type>.45?2:1,
-        maxHp:type>.75?3: type>.45?2:1,
-        speed:type>.75?1.05: type>.45?1.55:2.05,
-        color:type>.75?"#6b3e18": type>.45?"#386b2f":"#275d3f",
+        hp:type>.75?3:type>.45?2:1,
+        maxHp:type>.75?3:type>.45?2:1,
+        speed:type>.75?1.05:type>.45?1.55:2.05,
+        color:type>.75?"#6b3e18":type>.45?"#386b2f":"#275d3f",
         wobble:Math.random()*100
     });
 }
 
 function shoot(tx,ty){
     if(!running || shootTimer>0) return;
+
     let dx = tx-player.x;
     let dy = ty-player.y;
     let len = Math.hypot(dx,dy);
+
     if(len<1) return;
 
-    dx/=len; dy/=len;
+    dx/=len;
+    dy/=len;
+
     player.angle = Math.atan2(dy,dx);
 
     bullets.push({
@@ -312,15 +444,17 @@ function shoot(tx,ty){
 
 function burst(x,y,color,count=10){
     for(let i=0;i<count;i++){
-        let a=Math.random()*Math.PI*2;
-        let s=rand(1,5);
+        let a = Math.random()*Math.PI*2;
+        let s = rand(1,5);
+
         particles.push({
-            x,y,
+            x:x,
+            y:y,
             vx:Math.cos(a)*s,
             vy:Math.sin(a)*s,
             r:rand(2,6),
             life:rand(18,35),
-            color
+            color:color
         });
     }
 }
@@ -328,12 +462,13 @@ function burst(x,y,color,count=10){
 function update(){
     if(!running) return;
 
-    let mx = 0, my = 0;
+    let mx = 0;
+    let my = 0;
 
-    if(keys["ArrowUp"]||keys["w"]) my--;
-    if(keys["ArrowDown"]||keys["s"]) my++;
-    if(keys["ArrowLeft"]||keys["a"]) mx--;
-    if(keys["ArrowRight"]||keys["d"]) mx++;
+    if(keys["ArrowUp"] || keys["w"]) my--;
+    if(keys["ArrowDown"] || keys["s"]) my++;
+    if(keys["ArrowLeft"] || keys["a"]) mx--;
+    if(keys["ArrowRight"] || keys["d"]) mx++;
 
     if(mobile.move.active){
         mx += mobile.move.dx;
@@ -341,8 +476,10 @@ function update(){
     }
 
     let ml = Math.hypot(mx,my);
+
     if(ml>0){
-        mx/=ml; my/=ml;
+        mx/=ml;
+        my/=ml;
         player.x += mx*player.speed;
         player.y += my*player.speed;
     }
@@ -354,33 +491,42 @@ function update(){
     if(shootTimer>0) shootTimer--;
     if(shake>0) shake--;
 
-    if(mouse.down) shoot(mouse.x,mouse.y);
+    if(mouse.down){
+        shoot(mouse.x,mouse.y);
+    }
 
     if(mobile.shoot.active){
-        let tx = player.x + mobile.shoot.dx*150;
-        let ty = player.y + mobile.shoot.dy*150;
-        shoot(tx,ty);
+        shoot(
+            player.x + mobile.shoot.dx * 150,
+            player.y + mobile.shoot.dy * 150
+        );
     }
 
     bullets.forEach(b=>{
-        b.x+=b.vx;
-        b.y+=b.vy;
+        b.x += b.vx;
+        b.y += b.vy;
         b.life--;
     });
-    bullets = bullets.filter(b=>b.life>0 && b.x>-40 && b.x<W+40 && b.y>-40 && b.y<H+40);
+
+    bullets = bullets.filter(b=>{
+        return b.life>0 && b.x>-40 && b.x<W+40 && b.y>-40 && b.y<H+40;
+    });
 
     enemies.forEach(e=>{
         e.wobble += .1;
+
         let dx = player.x-e.x;
         let dy = player.y-e.y;
-        let l = Math.hypot(dx,dy)||1;
+        let l = Math.hypot(dx,dy) || 1;
+
         e.x += dx/l*e.speed + Math.sin(e.wobble)*.35;
         e.y += dy/l*e.speed + Math.cos(e.wobble)*.35;
 
-        if(dist(e.x,e.y,player.x,player.y)<e.r+player.r && player.inv<=0){
+        if(distance(e.x,e.y,player.x,player.y)<e.r+player.r && player.inv<=0){
             player.hp--;
             player.inv = 50;
             shake = 12;
+
             beep(120,.12,"sawtooth",.08);
             burst(player.x,player.y,"#ff3f6c",18);
 
@@ -389,25 +535,28 @@ function update(){
             player.y += Math.sin(a)*45;
 
             if(player.hp<=0){
-                running=false;
-                won=false;
-                overlay.style.display="flex";
-                overlay.querySelector("h1").textContent="💔 SCRUBBED OUT";
-                overlay.querySelector("p").innerHTML="The grime monsters got Reh Dogg. Hit restart and run it back.";
+                running = false;
+                won = false;
+                showEnd("💔 SCRUBBED OUT","The grime monsters got Reh Dogg. Hit restart and run it back.");
             }
+
             updateHud();
         }
     });
 
     for(let i=bullets.length-1;i>=0;i--){
-        let b=bullets[i];
+        let b = bullets[i];
+
         for(let j=enemies.length-1;j>=0;j--){
-            let e=enemies[j];
-            if(dist(b.x,b.y,e.x,e.y)<b.r+e.r){
+            let e = enemies[j];
+
+            if(distance(b.x,b.y,e.x,e.y)<b.r+e.r){
                 bullets.splice(i,1);
                 e.hp--;
+
                 burst(b.x,b.y,"#c9f7ff",8);
                 beep(520,.04,"triangle",.045);
+
                 if(e.hp<=0){
                     enemies.splice(j,1);
                     score += 10;
@@ -415,46 +564,75 @@ function update(){
                     beep(220,.06,"square",.05);
                     updateHud();
                 }
+
                 break;
             }
         }
     }
 
     for(let i=balls.length-1;i>=0;i--){
-        let b=balls[i];
+        let b = balls[i];
         b.spin += .08;
-        if(dist(player.x,player.y,b.x,b.y)<player.r+b.r){
+
+        if(distance(player.x,player.y,b.x,b.y)<player.r+b.r){
             balls.splice(i,1);
             collected++;
             score += 25;
+
             burst(b.x,b.y,"#ffda44",16);
             beep(980,.08,"sine",.07);
+
             updateHud();
 
             if(collected>=8){
-                running=false;
-                won=true;
-                overlay.style.display="flex";
-                overlay.querySelector("h1").textContent="🏆 SQUEAKY CLEAN WIN";
-                overlay.querySelector("p").innerHTML="Reh Dogg collected every tennis ball and cleaned the arena.";
+                running = false;
+                won = true;
+                showEnd("🏆 SQUEAKY CLEAN WIN","Reh Dogg collected every tennis ball and cleaned the arena.");
             }
         }
     }
 
     spawnTimer--;
+
     if(spawnTimer<=0 && enemies.length<13){
         spawnEnemy();
         spawnTimer = Math.max(35,90-score/10);
     }
 
     particles.forEach(p=>{
-        p.x+=p.vx;
-        p.y+=p.vy;
-        p.vx*=.94;
-        p.vy*=.94;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= .94;
+        p.vy *= .94;
         p.life--;
     });
+
     particles = particles.filter(p=>p.life>0);
+}
+
+function showEnd(title,message){
+    overlay.style.display = "flex";
+    overlay.innerHTML = `
+        <div class="start-card">
+            <div class="start-left">
+                <h1>${title}</h1>
+                <h2>Bark Stars Result</h2>
+                <p>${message}</p>
+                <div class="start-buttons">
+                    <button id="playAgainBtn">🔁 PLAY AGAIN</button>
+                </div>
+            </div>
+            <div class="start-right">
+                <img src="rehdogg-hero.png" alt="Reh Dogg Bark Stars Hero">
+            </div>
+        </div>
+    `;
+
+    document.getElementById("playAgainBtn").onclick = () => {
+        unlockSound();
+        overlay.style.display = "none";
+        reset();
+    };
 }
 
 function drawArena(){
@@ -462,28 +640,39 @@ function drawArena(){
     g.addColorStop(0,"#216b7a");
     g.addColorStop(.5,"#123b48");
     g.addColorStop(1,"#08242e");
-    ctx.fillStyle=g;
+
+    ctx.fillStyle = g;
     ctx.fillRect(0,0,W,H);
 
-    ctx.strokeStyle="rgba(255,255,255,.08)";
-    ctx.lineWidth=2;
+    ctx.strokeStyle = "rgba(255,255,255,.08)";
+    ctx.lineWidth = 2;
+
     for(let x=0;x<W;x+=50){
-        ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
-    }
-    for(let y=0;y<H;y+=50){
-        ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x,0);
+        ctx.lineTo(x,H);
+        ctx.stroke();
     }
 
-    ctx.fillStyle="#174b35";
+    for(let y=0;y<H;y+=50){
+        ctx.beginPath();
+        ctx.moveTo(0,y);
+        ctx.lineTo(W,y);
+        ctx.stroke();
+    }
+
+    ctx.fillStyle = "#174b35";
+
     for(let i=0;i<12;i++){
-        let x=(i*173)%W;
-        let y=(i*97)%H;
+        let x = (i*173)%W;
+        let y = (i*97)%H;
+
         ctx.beginPath();
         ctx.roundRect(x,y,80,42,12);
         ctx.fill();
     }
 
-    ctx.fillStyle="rgba(255,211,77,.15)";
+    ctx.fillStyle = "rgba(255,211,77,.15)";
     ctx.beginPath();
     ctx.arc(W/2,H/2,120,0,Math.PI*2);
     ctx.fill();
@@ -495,10 +684,10 @@ function drawPlayer(){
     ctx.rotate(player.angle);
 
     if(player.inv>0 && Math.floor(player.inv/5)%2===0){
-        ctx.globalAlpha=.45;
+        ctx.globalAlpha = .45;
     }
 
-    ctx.fillStyle="rgba(185,230,240,.7)";
+    ctx.fillStyle = "rgba(185,230,240,.7)";
     ctx.beginPath();
     ctx.moveTo(-20,-5);
     ctx.lineTo(-44,30);
@@ -507,30 +696,54 @@ function drawPlayer(){
     ctx.closePath();
     ctx.fill();
 
-    ctx.fillStyle="#ffcc33";
-    ctx.beginPath();ctx.ellipse(-9,18,9,6,0,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.ellipse(12,18,9,6,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle = "#ffcc33";
+    ctx.beginPath();
+    ctx.ellipse(-9,18,9,6,0,0,Math.PI*2);
+    ctx.fill();
 
-    ctx.fillStyle="#8b5a2b";
-    ctx.beginPath();ctx.arc(0,0,22,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(12,18,9,6,0,0,Math.PI*2);
+    ctx.fill();
 
-    ctx.fillStyle="#f6a6cf";
-    ctx.beginPath();ctx.ellipse(0,-20,19,10,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle = "#8b5a2b";
+    ctx.beginPath();
+    ctx.arc(0,0,22,0,Math.PI*2);
+    ctx.fill();
 
-    ctx.strokeStyle="#050505";
-    ctx.lineWidth=3;
-    ctx.beginPath();ctx.arc(-8,-5,6,0,Math.PI*2);ctx.stroke();
-    ctx.beginPath();ctx.arc(8,-5,6,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle = "#f6a6cf";
+    ctx.beginPath();
+    ctx.ellipse(0,-20,19,10,0,0,Math.PI*2);
+    ctx.fill();
 
-    ctx.fillStyle="#e6b422";
-    for(let x=-7;x<=7;x+=4) ctx.fillRect(x,7,3,5);
+    ctx.strokeStyle = "#050505";
+    ctx.lineWidth = 3;
 
-    ctx.strokeStyle="#8b5520";
-    ctx.lineWidth=6;
-    ctx.beginPath();ctx.moveTo(17,2);ctx.lineTo(52,2);ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(-8,-5,6,0,Math.PI*2);
+    ctx.stroke();
 
-    ctx.fillStyle="#79e15c";
-    ctx.beginPath();ctx.arc(62,2,13,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();
+    ctx.arc(8,-5,6,0,Math.PI*2);
+    ctx.stroke();
+
+    ctx.fillStyle = "#e6b422";
+
+    for(let x=-7;x<=7;x+=4){
+        ctx.fillRect(x,7,3,5);
+    }
+
+    ctx.strokeStyle = "#8b5520";
+    ctx.lineWidth = 6;
+
+    ctx.beginPath();
+    ctx.moveTo(17,2);
+    ctx.lineTo(52,2);
+    ctx.stroke();
+
+    ctx.fillStyle = "#79e15c";
+    ctx.beginPath();
+    ctx.arc(62,2,13,0,Math.PI*2);
+    ctx.fill();
 
     ctx.restore();
 }
@@ -538,21 +751,31 @@ function drawPlayer(){
 function drawEnemy(e){
     ctx.save();
     ctx.translate(e.x,e.y);
-    ctx.fillStyle=e.color;
+
+    ctx.fillStyle = e.color;
     ctx.beginPath();
     ctx.arc(0,0,e.r,0,Math.PI*2);
     ctx.fill();
 
-    ctx.fillStyle="#111";
-    ctx.beginPath();ctx.arc(-8,-6,4,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(8,-6,4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle = "#111";
 
-    ctx.fillStyle="#ff5c3f";
-    ctx.beginPath();ctx.ellipse(0,8,9,5,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();
+    ctx.arc(-8,-6,4,0,Math.PI*2);
+    ctx.fill();
 
-    ctx.fillStyle="#000";
+    ctx.beginPath();
+    ctx.arc(8,-6,4,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle = "#ff5c3f";
+    ctx.beginPath();
+    ctx.ellipse(0,8,9,5,0,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle = "#000";
     ctx.fillRect(-e.r,-e.r-10,e.r*2,5);
-    ctx.fillStyle="#ff3f6c";
+
+    ctx.fillStyle = "#ff3f6c";
     ctx.fillRect(-e.r,-e.r-10,(e.hp/e.maxHp)*e.r*2,5);
 
     ctx.restore();
@@ -571,30 +794,44 @@ function draw(){
         ctx.save();
         ctx.translate(b.x,b.y);
         ctx.rotate(b.spin);
-        ctx.fillStyle="#ffda44";
-        ctx.beginPath();ctx.arc(0,0,b.r,0,Math.PI*2);ctx.fill();
-        ctx.strokeStyle="#fff3a0";
-        ctx.lineWidth=3;
-        ctx.beginPath();ctx.arc(0,0,b.r-4,-1.2,1.2);ctx.stroke();
+
+        ctx.fillStyle = "#ffda44";
+        ctx.beginPath();
+        ctx.arc(0,0,b.r,0,Math.PI*2);
+        ctx.fill();
+
+        ctx.strokeStyle = "#fff3a0";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0,0,b.r-4,-1.2,1.2);
+        ctx.stroke();
+
         ctx.restore();
     });
 
     enemies.forEach(drawEnemy);
 
     bullets.forEach(b=>{
-        ctx.fillStyle="#d8fbff";
-        ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle="rgba(255,255,255,.8)";
-        ctx.beginPath();ctx.arc(b.x-3,b.y-3,3,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle = "#d8fbff";
+        ctx.beginPath();
+        ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+        ctx.fill();
+
+        ctx.fillStyle = "rgba(255,255,255,.8)";
+        ctx.beginPath();
+        ctx.arc(b.x-3,b.y-3,3,0,Math.PI*2);
+        ctx.fill();
     });
 
     drawPlayer();
 
     particles.forEach(p=>{
-        ctx.globalAlpha=Math.max(0,p.life/35);
-        ctx.fillStyle=p.color;
-        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
-        ctx.globalAlpha=1;
+        ctx.globalAlpha = Math.max(0,p.life/35);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
     });
 
     ctx.restore();
@@ -608,6 +845,7 @@ function loop(){
 
 function canvasPos(e){
     const r = canvas.getBoundingClientRect();
+
     return {
         x:(e.clientX-r.left)*(canvas.width/r.width),
         y:(e.clientY-r.top)*(canvas.height/r.height)
@@ -616,89 +854,118 @@ function canvasPos(e){
 
 window.addEventListener("keydown",e=>{
     unlockSound();
-    keys[e.key]=true;
+    keys[e.key] = true;
 });
-window.addEventListener("keyup",e=>keys[e.key]=false);
+
+window.addEventListener("keyup",e=>{
+    keys[e.key] = false;
+});
 
 canvas.addEventListener("mousemove",e=>{
-    const p=canvasPos(e);
-    mouse.x=p.x; mouse.y=p.y;
+    const p = canvasPos(e);
+    mouse.x = p.x;
+    mouse.y = p.y;
 });
+
 canvas.addEventListener("mousedown",e=>{
     unlockSound();
-    const p=canvasPos(e);
-    mouse.x=p.x; mouse.y=p.y;
-    mouse.down=true;
+    const p = canvasPos(e);
+    mouse.x = p.x;
+    mouse.y = p.y;
+    mouse.down = true;
 });
-window.addEventListener("mouseup",()=>mouse.down=false);
+
+window.addEventListener("mouseup",()=>{
+    mouse.down = false;
+});
 
 function setupPad(id,knobId,type){
-    const pad=document.getElementById(id);
-    const knob=document.getElementById(knobId);
+    const pad = document.getElementById(id);
+    const knob = document.getElementById(knobId);
 
-    function moveTouch(t){
-        const r=pad.getBoundingClientRect();
-        const cx=r.left+r.width/2;
-        const cy=r.top+r.height/2;
-        let dx=t.clientX-cx;
-        let dy=t.clientY-cy;
-        const len=Math.hypot(dx,dy);
-        const max=38;
-        if(len>max){dx=dx/len*max;dy=dy/len*max;}
-        knob.style.left=(38+dx)+"px";
-        knob.style.top=(38+dy)+"px";
+    function updatePad(e){
+        const r = pad.getBoundingClientRect();
+        const cx = r.left + r.width/2;
+        const cy = r.top + r.height/2;
 
-        const ndx = dx/max;
-        const ndy = dy/max;
+        let dx = e.clientX - cx;
+        let dy = e.clientY - cy;
 
-        mobile[type].dx = ndx;
-        mobile[type].dy = ndy;
+        const len = Math.hypot(dx,dy);
+        const max = 38;
+
+        if(len>max){
+            dx = dx/len*max;
+            dy = dy/len*max;
+        }
+
+        knob.style.left = (38+dx)+"px";
+        knob.style.top = (38+dy)+"px";
+
+        mobile[type].dx = dx/max;
+        mobile[type].dy = dy/max;
     }
 
-    pad.addEventListener("touchstart",e=>{
+    pad.addEventListener("pointerdown",e=>{
+        e.preventDefault();
         unlockSound();
-        e.preventDefault();
-        mobile[type].active=true;
-        moveTouch(e.touches[0]);
-    },{passive:false});
 
-    pad.addEventListener("touchmove",e=>{
-        e.preventDefault();
-        moveTouch(e.touches[0]);
-    },{passive:false});
+        try{
+            pad.setPointerCapture(e.pointerId);
+        }catch(err){}
 
-    pad.addEventListener("touchend",e=>{
+        mobile[type].active = true;
+        updatePad(e);
+    });
+
+    pad.addEventListener("pointermove",e=>{
+        if(!mobile[type].active) return;
         e.preventDefault();
-        mobile[type].active=false;
-        knob.style.left="38px";
-        knob.style.top="38px";
+        updatePad(e);
+    });
+
+    function release(e){
+        if(e) e.preventDefault();
+
+        mobile[type].active = false;
+        knob.style.left = "38px";
+        knob.style.top = "38px";
+
         if(type==="shoot"){
-            mobile.shoot.dx=1;
-            mobile.shoot.dy=0;
+            mobile.shoot.dx = 1;
+            mobile.shoot.dy = 0;
         }else{
-            mobile.move.dx=0;
-            mobile.move.dy=0;
+            mobile.move.dx = 0;
+            mobile.move.dy = 0;
         }
-    },{passive:false});
+    }
+
+    pad.addEventListener("pointerup",release);
+    pad.addEventListener("pointercancel",release);
+    pad.addEventListener("lostpointercapture",release);
 }
 
 setupPad("movePad","moveKnob","move");
 setupPad("shootPad","shootKnob","shoot");
 
-document.getElementById("startBtn").onclick=()=>{
+document.getElementById("startBtn").onclick = () => {
     unlockSound();
-    overlay.style.display="none";
+    overlay.style.display = "none";
     reset();
 };
 
-document.getElementById("restartBtn").onclick=()=>{
+document.getElementById("howBtn").onclick = () => {
+    alert("Desktop: WASD or arrows to move. Mouse to aim. Hold click to shoot. Mobile: left pad moves. Right pad aims and shoots.");
+};
+
+document.getElementById("restartBtn").onclick = () => {
     unlockSound();
-    overlay.style.display="none";
+    overlay.style.display = "none";
     reset();
 };
 
 if(!CanvasRenderingContext2D.prototype.roundRect){
-    CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+    CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){
         this.beginPath();
         this.moveTo(x+r,y);
         this.lineTo(x+w-r,y);
@@ -717,5 +984,6 @@ draw();
 loop();
 })();
 </script>
+
 </body>
 </html>
