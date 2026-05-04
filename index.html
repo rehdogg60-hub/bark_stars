@@ -823,7 +823,8 @@ function draw(){
         ctx.translate(rand(-shake,shake),rand(-shake,shake));
     }
 
-    drawArena()let vignette = ctx.createRadialGradient(W/2, H/2, 200, W/2, H/2, 600);
+    drawArena()drawArena();
+let vignette = ctx.createRadialGradient(W/2, H/2, 200, W/2, H/2, 600);
 vignette.addColorStop(0, "rgba(0,0,0,0)");
 vignette.addColorStop(1, "rgba(0,0,0,0.5)");
 ctx.fillStyle = vignette;
