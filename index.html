@@ -222,7 +222,7 @@ function update(){
     }
 
     spawnTimer--;
-    if(spawnTimer<=0&&enemies.length<13){spawnEnemy();spawnTimer=Math.max(35,90-score/10)}
+    if(spawnTimer<=0&&enemies.length<10){spawnEnemy();spawnTimer=120}
     particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=.94;p.vy*=.94;p.life--});
     particles=particles.filter(p=>p.life>0);
 }
