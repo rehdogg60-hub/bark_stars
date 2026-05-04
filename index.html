@@ -750,33 +750,60 @@ function drawPlayer(){
 
 function drawEnemy(e){
     ctx.save();
-    ctx.translate(e.x,e.y);
+    ctx.translate(e.x, e.y);
 
+    // BODY (dirty blob)
     ctx.fillStyle = e.color;
     ctx.beginPath();
-    ctx.arc(0,0,e.r,0,Math.PI*2);
+    ctx.arc(0, 0, e.r, 0, Math.PI*2);
     ctx.fill();
 
-    ctx.fillStyle = "#111";
+    // SHADOW
+    ctx.fillStyle = "rgba(0,0,0,0.4)";
+    ctx.beginPath();
+    ctx.ellipse(0, e.r-2, e.r*0.8, 6, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // ANGRY EYES
+    ctx.fillStyle = "#000";
 
     ctx.beginPath();
-    ctx.arc(-8,-6,4,0,Math.PI*2);
+    ctx.moveTo(-10, -8);
+    ctx.lineTo(-2, -4);
+    ctx.lineTo(-10, -2);
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(8,-6,4,0,Math.PI*2);
+    ctx.moveTo(10, -8);
+    ctx.lineTo(2, -4);
+    ctx.lineTo(10, -2);
     ctx.fill();
 
-    ctx.fillStyle = "#ff5c3f";
+    // GLOW EYES
+    ctx.fillStyle = "#ff3f3f";
     ctx.beginPath();
-    ctx.ellipse(0,8,9,5,0,0,Math.PI*2);
+    ctx.arc(-6, -4, 2, 0, Math.PI*2);
     ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(6, -4, 2, 0, Math.PI*2);
+    ctx.fill();
+
+    // TEETH (no more smiley look)
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(-8, 6, 16, 5);
 
     ctx.fillStyle = "#000";
-    ctx.fillRect(-e.r,-e.r-10,e.r*2,5);
+    for(let i=-6;i<=6;i+=4){
+        ctx.fillRect(i, 6, 1, 5);
+    }
+
+    // HP BAR
+    ctx.fillStyle = "#000";
+    ctx.fillRect(-e.r, -e.r-10, e.r*2, 5);
 
     ctx.fillStyle = "#ff3f6c";
-    ctx.fillRect(-e.r,-e.r-10,(e.hp/e.maxHp)*e.r*2,5);
+    ctx.fillRect(-e.r, -e.r-10, (e.hp/e.maxHp)*e.r*2, 5);
 
     ctx.restore();
 }
