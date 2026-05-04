@@ -1,600 +1,721 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Bark Stars – Reh Dogg Games Plus</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
-        body {
-            background: linear-gradient(145deg, #0a2f3f, #0a1f2a);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Segoe UI', 'Comic Neue', sans-serif;
-        }
-        .game-container {
-            background: #1c3e4a;
-            padding: 20px;
-            border-radius: 48px;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.4);
-        }
-        canvas {
-            display: block;
-            margin: 0 auto;
-            border-radius: 24px;
-            box-shadow: 0 0 0 4px #ffd966, 0 0 0 8px #2e6c80;
-            cursor: crosshair;
-        }
-        .info-panel {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 16px;
-            background: #fef5e0;
-            padding: 10px 20px;
-            border-radius: 60px;
-            color: #1e4a5f;
-            font-weight: bold;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .stats {
-            display: flex;
-            gap: 24px;
-            background: #2e6c80;
-            padding: 6px 18px;
-            border-radius: 40px;
-            color: white;
-        }
-        .controls {
-            font-size: 0.8rem;
-            background: #ffe0b5;
-            padding: 5px 12px;
-            border-radius: 30px;
-        }
-        button {
-            background: #ffb347;
-            border: none;
-            font-weight: bold;
-            padding: 6px 18px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: 0.1s linear;
-        }
-        button:hover {
-            background: #ff9f1a;
-            transform: scale(0.97);
-        }
-        .reh-quote {
-            font-style: italic;
-            font-size: 0.8rem;
-            background: #d9e6f0;
-            padding: 4px 12px;
-            border-radius: 20px;
-        }
-        @media (max-width: 800px) {
-            .info-panel { flex-direction: column; align-items: stretch; text-align: center; }
-            .controls { text-align: center; }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>Bark Stars | Reh Dogg Games Plus</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;user-select:none}
+body{
+    min-height:100vh;
+    background:radial-gradient(circle at top,#13485c,#061821 70%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:Arial,Helvetica,sans-serif;
+    color:white;
+    overflow:hidden;
+}
+#wrap{
+    width:min(100vw,1100px);
+    padding:10px;
+}
+#gameBox{
+    position:relative;
+    background:#082631;
+    border:5px solid #ffd34d;
+    border-radius:26px;
+    overflow:hidden;
+    box-shadow:0 25px 70px rgba(0,0,0,.65);
+}
+canvas{
+    width:100%;
+    height:auto;
+    display:block;
+    background:#111;
+}
+#hud{
+    display:flex;
+    gap:10px;
+    justify-content:space-between;
+    align-items:center;
+    background:linear-gradient(90deg,#ffcc33,#ff8c1a);
+    color:#102b35;
+    padding:10px 14px;
+    font-weight:900;
+    flex-wrap:wrap;
+}
+.pill{
+    background:white;
+    border:3px solid #102b35;
+    border-radius:999px;
+    padding:6px 12px;
+}
+button{
+    border:none;
+    border-radius:999px;
+    padding:10px 18px;
+    font-weight:900;
+    background:#1de0ff;
+    color:#082631;
+    cursor:pointer;
+    box-shadow:0 4px 0 #076b7a;
+}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #076b7a}
+#overlay{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    background:linear-gradient(rgba(3,12,17,.88),rgba(3,12,17,.92));
+    z-index:5;
+    padding:25px;
+}
+#overlay h1{
+    font-size:clamp(2rem,7vw,5rem);
+    color:#ffda44;
+    text-shadow:4px 4px #000;
+}
+#overlay p{
+    max-width:680px;
+    margin:12px auto;
+    font-size:1.05rem;
+    line-height:1.45;
+}
+#startBtn{
+    margin-top:20px;
+    font-size:1.2rem;
+    background:#ff3f6c;
+    color:white;
+    box-shadow:0 5px 0 #8f1633;
+}
+#mobileControls{
+    display:none;
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:4;
+}
+.touchPad{
+    position:absolute;
+    bottom:22px;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:rgba(255,255,255,.18);
+    border:3px solid rgba(255,255,255,.45);
+    pointer-events:auto;
+}
+#movePad{left:22px}
+#shootPad{right:22px}
+.knob{
+    position:absolute;
+    left:38px;
+    top:38px;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#ffda44;
+    border:3px solid #222;
+}
+.label{
+    position:absolute;
+    width:100%;
+    text-align:center;
+    bottom:-24px;
+    font-weight:900;
+    font-size:.75rem;
+}
+@media(max-width:800px){
+    #mobileControls{display:block}
+    #hud{font-size:.8rem}
+}
+</style>
 </head>
 <body>
-<div>
-    <div class="game-container">
-        <canvas id="gameCanvas" width="1000" height="700"></canvas>
-        <div class="info-panel">
-            <div class="stats">
-                <span>🧼 Suds: <span id="scoreCount">0</span></span>
-                <span>❤️ Shower health: <span id="healthCount">5</span></span>
-                <span>🧽 Tennis balls: <span id="ballCount">0</span> / 8</span>
+<div id="wrap">
+    <div id="gameBox">
+        <canvas id="game" width="1000" height="650"></canvas>
+
+        <div id="mobileControls">
+            <div id="movePad" class="touchPad">
+                <div id="moveKnob" class="knob"></div>
+                <div class="label">MOVE</div>
             </div>
-            <div class="controls">
-                🎮 WASD / arrows • 🖱️ mouse aim • 🖱️ hold left click = shoot suds
+            <div id="shootPad" class="touchPad">
+                <div id="shootKnob" class="knob"></div>
+                <div class="label">SHOOT</div>
             </div>
-            <button id="resetBtn">🚿 Fresh Shower (restart)</button>
         </div>
-        <div class="reh-quote">
-            💬 “Short king with gold teeth. Don't slip.” — Reh Dogg
+
+        <div id="overlay">
+            <h1>🧼 BARK STARS</h1>
+            <p>
+                Reh Dogg enters the Sudsy Arena with gold teeth, shower booties,
+                a shower curtain cape, and a loofah staff. Collect all tennis balls,
+                blast grime monsters, and survive the backyard brawl.
+            </p>
+            <p><b>Desktop:</b> WASD or arrows to move. Mouse to aim. Hold click to shoot.</p>
+            <p><b>Mobile:</b> left pad moves, right pad aims and shoots.</p>
+            <button id="startBtn">START BRAWL</button>
         </div>
+    </div>
+
+    <div id="hud">
+        <div class="pill">🧼 Suds Score: <span id="score">0</span></div>
+        <div class="pill">❤️ Health: <span id="health">5</span></div>
+        <div class="pill">🎾 Balls: <span id="balls">0</span> / 8</div>
+        <button id="restartBtn">Restart</button>
     </div>
 </div>
 
 <script>
-    (function(){
-        // ----- CANVAS -----
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+(() => {
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const W = canvas.width;
+const H = canvas.height;
 
-        // ----- GAME DIMENSIONS -----
-        const W = 1000, H = 700;
+const scoreEl = document.getElementById("score");
+const healthEl = document.getElementById("health");
+const ballsEl = document.getElementById("balls");
+const overlay = document.getElementById("overlay");
 
-        // ----- PLAYER (Reh Dogg) -----
-        let player = {
-            x: W/2,
-            y: H/2,
-            radius: 22,
-            health: 5,
-            invincibleFrames: 0,   // after hit, brief immunity
-            maxHealth: 5
-        };
+let audioCtx = null;
+let soundReady = false;
 
-        // ----- PROJECTILES (suds) -----
-        let projectiles = [];
-        const PROJECTILE_RADIUS = 8;
-        const PROJECTILE_SPEED = 9;
-        let shootCooldown = 0;
-        const SHOOT_DELAY_FRAMES = 10;  // ~60fps -> 6 shots per second
+function unlockSound(){
+    if(soundReady) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    soundReady = true;
+    beep(440,.04,"square",.04);
+}
 
-        // ----- ENEMIES (rival brawlers / dirty grime monsters) -----
-        let enemies = [];
-        const ENEMY_BASE_SPEED = 0.9;
-        const ENEMY_RADIUS = 20;
-        let enemySpawnCounter = 0;
-        const ENEMY_SPAWN_DELAY = 70;   // frames between spawns
-        let maxEnemies = 8;
+function beep(freq=440,duration=.07,type="sine",volume=.05){
+    if(!soundReady || !audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.value = volume;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+duration);
+    osc.stop(audioCtx.currentTime+duration);
+}
 
-        // ----- COLLECTABLES (tennis balls) -----
-        let tennisBalls = [];
-        const BALL_RADIUS = 9;
-        let ballsCollected = 0;
-        const BALLS_TO_WIN = 8;   // win condition
+let keys = {};
+let mouse = {x:W/2,y:H/2,down:false};
 
-        // ----- GAME STATE -----
-        let gameRunning = true;
-        let gameWinFlag = false;
-        let score = 0;      // suds = kills
+let player, bullets, enemies, balls, particles;
+let score = 0;
+let collected = 0;
+let running = false;
+let won = false;
+let spawnTimer = 0;
+let shootTimer = 0;
+let shake = 0;
 
-        // ----- MOUSE POSITION (for aiming) -----
-        let mouseX = player.x, mouseY = player.y;
+const mobile = {
+    move:{active:false,x:0,y:0,dx:0,dy:0},
+    shoot:{active:false,x:0,y:0,dx:1,dy:0}
+};
 
-        // ----- MOVEMENT FLAGS (WASD + arrows)-----
-        const keys = {
-            ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false,
-            w: false, s: false, a: false, d: false
-        };
+function reset(){
+    player = {
+        x:W/2,y:H/2,r:24,
+        hp:5,maxHp:5,
+        speed:4.7,
+        inv:0,
+        angle:0
+    };
+    bullets = [];
+    enemies = [];
+    balls = [];
+    particles = [];
+    score = 0;
+    collected = 0;
+    won = false;
+    running = true;
+    spawnTimer = 0;
+    shootTimer = 0;
+    shake = 0;
 
-        // ----- Helper: Spawn Tennis Balls randomly (non-overlapping) -----
-        function spawnTennisBalls(count) {
-            tennisBalls = [];
-            for(let i=0; i<count; i++) {
-                let overlap = true;
-                let tries = 0;
-                let nx, ny;
-                while(overlap && tries < 200) {
-                    nx = 40 + Math.random() * (W - 80);
-                    ny = 40 + Math.random() * (H - 80);
-                    overlap = false;
-                    // avoid overlapping with player start
-                    let dx = nx - player.x;
-                    let dy = ny - player.y;
-                    if(Math.hypot(dx,dy) < 50) overlap = true;
-                    // avoid overlapping with each other
-                    for(let b of tennisBalls) {
-                        if(Math.hypot(nx - b.x, ny - b.y) < BALL_RADIUS*2) {
-                            overlap = true;
-                            break;
-                        }
-                    }
-                    tries++;
+    for(let i=0;i<8;i++) spawnBall();
+    for(let i=0;i<5;i++) spawnEnemy();
+
+    updateHud();
+}
+
+function updateHud(){
+    scoreEl.textContent = score;
+    healthEl.textContent = player.hp;
+    ballsEl.textContent = collected;
+}
+
+function rand(min,max){return min + Math.random()*(max-min)}
+function dist(a,b,c,d){return Math.hypot(a-c,b-d)}
+
+function spawnBall(){
+    let x,y,tries=0;
+    do{
+        x=rand(60,W-60);
+        y=rand(70,H-60);
+        tries++;
+    }while(dist(x,y,W/2,H/2)<130 && tries<100);
+    balls.push({x,y,r:13,spin:Math.random()*10});
+}
+
+function spawnEnemy(){
+    let side = Math.floor(Math.random()*4);
+    let x = side===0 ? -30 : side===1 ? W+30 : rand(0,W);
+    let y = side===2 ? -30 : side===3 ? H+30 : rand(0,H);
+    let type = Math.random();
+
+    enemies.push({
+        x,y,
+        r:type>.75?28:22,
+        hp:type>.75?3: type>.45?2:1,
+        maxHp:type>.75?3: type>.45?2:1,
+        speed:type>.75?1.05: type>.45?1.55:2.05,
+        color:type>.75?"#6b3e18": type>.45?"#386b2f":"#275d3f",
+        wobble:Math.random()*100
+    });
+}
+
+function shoot(tx,ty){
+    if(!running || shootTimer>0) return;
+    let dx = tx-player.x;
+    let dy = ty-player.y;
+    let len = Math.hypot(dx,dy);
+    if(len<1) return;
+
+    dx/=len; dy/=len;
+    player.angle = Math.atan2(dy,dx);
+
+    bullets.push({
+        x:player.x+dx*32,
+        y:player.y+dy*32,
+        vx:dx*11,
+        vy:dy*11,
+        r:8,
+        life:70
+    });
+
+    shootTimer = 8;
+    beep(780,.035,"square",.035);
+}
+
+function burst(x,y,color,count=10){
+    for(let i=0;i<count;i++){
+        let a=Math.random()*Math.PI*2;
+        let s=rand(1,5);
+        particles.push({
+            x,y,
+            vx:Math.cos(a)*s,
+            vy:Math.sin(a)*s,
+            r:rand(2,6),
+            life:rand(18,35),
+            color
+        });
+    }
+}
+
+function update(){
+    if(!running) return;
+
+    let mx = 0, my = 0;
+
+    if(keys["ArrowUp"]||keys["w"]) my--;
+    if(keys["ArrowDown"]||keys["s"]) my++;
+    if(keys["ArrowLeft"]||keys["a"]) mx--;
+    if(keys["ArrowRight"]||keys["d"]) mx++;
+
+    if(mobile.move.active){
+        mx += mobile.move.dx;
+        my += mobile.move.dy;
+    }
+
+    let ml = Math.hypot(mx,my);
+    if(ml>0){
+        mx/=ml; my/=ml;
+        player.x += mx*player.speed;
+        player.y += my*player.speed;
+    }
+
+    player.x = Math.max(player.r,Math.min(W-player.r,player.x));
+    player.y = Math.max(player.r,Math.min(H-player.r,player.y));
+
+    if(player.inv>0) player.inv--;
+    if(shootTimer>0) shootTimer--;
+    if(shake>0) shake--;
+
+    if(mouse.down) shoot(mouse.x,mouse.y);
+
+    if(mobile.shoot.active){
+        let tx = player.x + mobile.shoot.dx*150;
+        let ty = player.y + mobile.shoot.dy*150;
+        shoot(tx,ty);
+    }
+
+    bullets.forEach(b=>{
+        b.x+=b.vx;
+        b.y+=b.vy;
+        b.life--;
+    });
+    bullets = bullets.filter(b=>b.life>0 && b.x>-40 && b.x<W+40 && b.y>-40 && b.y<H+40);
+
+    enemies.forEach(e=>{
+        e.wobble += .1;
+        let dx = player.x-e.x;
+        let dy = player.y-e.y;
+        let l = Math.hypot(dx,dy)||1;
+        e.x += dx/l*e.speed + Math.sin(e.wobble)*.35;
+        e.y += dy/l*e.speed + Math.cos(e.wobble)*.35;
+
+        if(dist(e.x,e.y,player.x,player.y)<e.r+player.r && player.inv<=0){
+            player.hp--;
+            player.inv = 50;
+            shake = 12;
+            beep(120,.12,"sawtooth",.08);
+            burst(player.x,player.y,"#ff3f6c",18);
+
+            let a = Math.atan2(player.y-e.y,player.x-e.x);
+            player.x += Math.cos(a)*45;
+            player.y += Math.sin(a)*45;
+
+            if(player.hp<=0){
+                running=false;
+                won=false;
+                overlay.style.display="flex";
+                overlay.querySelector("h1").textContent="💔 SCRUBBED OUT";
+                overlay.querySelector("p").innerHTML="The grime monsters got Reh Dogg. Hit restart and run it back.";
+            }
+            updateHud();
+        }
+    });
+
+    for(let i=bullets.length-1;i>=0;i--){
+        let b=bullets[i];
+        for(let j=enemies.length-1;j>=0;j--){
+            let e=enemies[j];
+            if(dist(b.x,b.y,e.x,e.y)<b.r+e.r){
+                bullets.splice(i,1);
+                e.hp--;
+                burst(b.x,b.y,"#c9f7ff",8);
+                beep(520,.04,"triangle",.045);
+                if(e.hp<=0){
+                    enemies.splice(j,1);
+                    score += 10;
+                    burst(e.x,e.y,"#7cff8b",18);
+                    beep(220,.06,"square",.05);
+                    updateHud();
                 }
-                tennisBalls.push({ x: nx, y: ny, radius: BALL_RADIUS });
+                break;
             }
         }
+    }
 
-        // ----- Spawn enemy at safe distance from player -----
-        function spawnEnemy() {
-            if(enemies.length >= maxEnemies+2) return;
-            let side = Math.floor(Math.random() * 4);
-            let ex, ey;
-            if(side === 0) { ex = 30; ey = Math.random() * H; }
-            else if(side === 2) { ex = W-30; ey = Math.random() * H; }
-            else if(side === 1) { ex = Math.random() * W; ey = 30; }
-            else { ex = Math.random() * W; ey = H-30; }
-            // avoid instant collision with player
-            if(Math.hypot(ex - player.x, ey - player.y) < 120) {
-                ex = Math.min(W-40, Math.max(40, ex+80));
-                ey = Math.min(H-40, Math.max(40, ey+80));
-            }
-            enemies.push({
-                x: ex, y: ey,
-                radius: ENEMY_RADIUS,
-                hp: 1,   // one hit kill
-                speed: ENEMY_BASE_SPEED + Math.random() * 0.6
-            });
-        }
+    for(let i=balls.length-1;i>=0;i--){
+        let b=balls[i];
+        b.spin += .08;
+        if(dist(player.x,player.y,b.x,b.y)<player.r+b.r){
+            balls.splice(i,1);
+            collected++;
+            score += 25;
+            burst(b.x,b.y,"#ffda44",16);
+            beep(980,.08,"sine",.07);
+            updateHud();
 
-        // ----- Reset full game -----
-        function resetGame() {
-            gameRunning = true;
-            gameWinFlag = false;
-            player.health = player.maxHealth;
-            player.invincibleFrames = 0;
-            player.x = W/2;
-            player.y = H/2;
-            score = 0;
-            ballsCollected = 0;
-            projectiles = [];
-            enemies = [];
-            tennisBalls = [];
-            shootCooldown = 0;
-            enemySpawnCounter = 8;   // quick first enemies
-            
-            document.getElementById('scoreCount').innerText = score;
-            document.getElementById('healthCount').innerText = player.health;
-            document.getElementById('ballCount').innerText = ballsCollected + " / " + BALLS_TO_WIN;
-            
-            spawnTennisBalls(BALLS_TO_WIN);
-            // spawn initial 2 enemies
-            for(let i=0; i<3; i++) spawnEnemy();
+            if(collected>=8){
+                running=false;
+                won=true;
+                overlay.style.display="flex";
+                overlay.querySelector("h1").textContent="🏆 SQUEAKY CLEAN WIN";
+                overlay.querySelector("p").innerHTML="Reh Dogg collected every tennis ball and cleaned the arena.";
+            }
         }
+    }
 
-        // ----- UPDATE LOGIC (called each frame) -----
-        function updateGame() {
-            if(!gameRunning) return;
+    spawnTimer--;
+    if(spawnTimer<=0 && enemies.length<13){
+        spawnEnemy();
+        spawnTimer = Math.max(35,90-score/10);
+    }
 
-            // 1) movement
-            let moveX = 0, moveY = 0;
-            if(keys.ArrowUp || keys.w) moveY -= 1;
-            if(keys.ArrowDown || keys.s) moveY += 1;
-            if(keys.ArrowLeft || keys.a) moveX -= 1;
-            if(keys.ArrowRight || keys.d) moveX += 1;
-            if(moveX !== 0 || moveY !== 0) {
-                const len = Math.hypot(moveX, moveY);
-                moveX /= len;
-                moveY /= len;
-            }
-            let speed = 5.2;
-            let newX = player.x + moveX * speed;
-            let newY = player.y + moveY * speed;
-            // boundaries
-            player.x = Math.min(W - player.radius - 2, Math.max(player.radius + 2, newX));
-            player.y = Math.min(H - player.radius - 2, Math.max(player.radius + 2, newY));
+    particles.forEach(p=>{
+        p.x+=p.vx;
+        p.y+=p.vy;
+        p.vx*=.94;
+        p.vy*=.94;
+        p.life--;
+    });
+    particles = particles.filter(p=>p.life>0);
+}
 
-            // 2) shooting (cooldown)
-            if(shootCooldown > 0) shootCooldown--;
-            
-            // 3) update projectiles
-            for(let i=0; i<projectiles.length; i++) {
-                let p = projectiles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                if(p.x < -50 || p.x > W+50 || p.y < -50 || p.y > H+50) {
-                    projectiles.splice(i,1);
-                    i--;
-                    continue;
-                }
-                // hit enemies
-                let hit = false;
-                for(let j=0; j<enemies.length; j++) {
-                    let e = enemies[j];
-                    if(Math.hypot(p.x - e.x, p.y - e.y) < PROJECTILE_RADIUS + e.radius) {
-                        enemies.splice(j,1);
-                        hit = true;
-                        score++;
-                        document.getElementById('scoreCount').innerText = score;
-                        break;
-                    }
-                }
-                if(hit) {
-                    projectiles.splice(i,1);
-                    i--;
-                }
-            }
-            
-            // 4) enemy movement & collision with player
-            for(let i=0; i<enemies.length; i++) {
-                let e = enemies[i];
-                let dx = player.x - e.x;
-                let dy = player.y - e.y;
-                let dist = Math.hypot(dx,dy);
-                if(dist > 0.01) {
-                    let move = e.speed;
-                    e.x += (dx / dist) * move;
-                    e.y += (dy / dist) * move;
-                }
-                // boundaries for enemies
-                e.x = Math.min(W - e.radius - 2, Math.max(e.radius + 2, e.x));
-                e.y = Math.min(H - e.radius - 2, Math.max(e.radius + 2, e.y));
-                
-                // enemy-player collision (damage)
-                if(Math.hypot(player.x - e.x, player.y - e.y) < player.radius + e.radius) {
-                    if(player.invincibleFrames <= 0 && gameRunning && !gameWinFlag) {
-                        player.health--;
-                        document.getElementById('healthCount').innerText = player.health;
-                        if(player.health <= 0) {
-                            gameRunning = false;
-                            gameWinFlag = false;
-                            return;
-                        }
-                        player.invincibleFrames = 25;  // ~0.4 sec
-                        // knockback
-                        let angle = Math.atan2(player.y - e.y, player.x - e.x);
-                        player.x += Math.cos(angle) * 35;
-                        player.y += Math.sin(angle) * 35;
-                        player.x = Math.min(W - player.radius - 2, Math.max(player.radius + 2, player.x));
-                        player.y = Math.min(H - player.radius - 2, Math.max(player.radius + 2, player.y));
-                    }
-                }
-            }
-            
-            // invincibility frames reduction
-            if(player.invincibleFrames > 0) player.invincibleFrames--;
-            
-            // 5) collect tennis balls
-            for(let i=0; i<tennisBalls.length; i++) {
-                let ball = tennisBalls[i];
-                if(Math.hypot(player.x - ball.x, player.y - ball.y) < player.radius + ball.radius) {
-                    tennisBalls.splice(i,1);
-                    ballsCollected++;
-                    document.getElementById('ballCount').innerText = ballsCollected + " / " + BALLS_TO_WIN;
-                    i--;
-                }
-            }
-            
-            // win condition
-            if(ballsCollected >= BALLS_TO_WIN && gameRunning) {
-                gameRunning = false;
-                gameWinFlag = true;
-                return;
-            }
-            
-            // 6) enemy spawn
-            if(enemies.length < maxEnemies + 1) {
-                if(enemySpawnCounter <= 0) {
-                    spawnEnemy();
-                    enemySpawnCounter = ENEMY_SPAWN_DELAY;
-                } else {
-                    enemySpawnCounter--;
-                }
-            } else {
-                enemySpawnCounter = 5;
-            }
+function drawArena(){
+    let g = ctx.createLinearGradient(0,0,W,H);
+    g.addColorStop(0,"#216b7a");
+    g.addColorStop(.5,"#123b48");
+    g.addColorStop(1,"#08242e");
+    ctx.fillStyle=g;
+    ctx.fillRect(0,0,W,H);
+
+    ctx.strokeStyle="rgba(255,255,255,.08)";
+    ctx.lineWidth=2;
+    for(let x=0;x<W;x+=50){
+        ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
+    }
+    for(let y=0;y<H;y+=50){
+        ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
+    }
+
+    ctx.fillStyle="#174b35";
+    for(let i=0;i<12;i++){
+        let x=(i*173)%W;
+        let y=(i*97)%H;
+        ctx.beginPath();
+        ctx.roundRect(x,y,80,42,12);
+        ctx.fill();
+    }
+
+    ctx.fillStyle="rgba(255,211,77,.15)";
+    ctx.beginPath();
+    ctx.arc(W/2,H/2,120,0,Math.PI*2);
+    ctx.fill();
+}
+
+function drawPlayer(){
+    ctx.save();
+    ctx.translate(player.x,player.y);
+    ctx.rotate(player.angle);
+
+    if(player.inv>0 && Math.floor(player.inv/5)%2===0){
+        ctx.globalAlpha=.45;
+    }
+
+    ctx.fillStyle="rgba(185,230,240,.7)";
+    ctx.beginPath();
+    ctx.moveTo(-20,-5);
+    ctx.lineTo(-44,30);
+    ctx.lineTo(26,28);
+    ctx.lineTo(15,-12);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle="#ffcc33";
+    ctx.beginPath();ctx.ellipse(-9,18,9,6,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(12,18,9,6,0,0,Math.PI*2);ctx.fill();
+
+    ctx.fillStyle="#8b5a2b";
+    ctx.beginPath();ctx.arc(0,0,22,0,Math.PI*2);ctx.fill();
+
+    ctx.fillStyle="#f6a6cf";
+    ctx.beginPath();ctx.ellipse(0,-20,19,10,0,0,Math.PI*2);ctx.fill();
+
+    ctx.strokeStyle="#050505";
+    ctx.lineWidth=3;
+    ctx.beginPath();ctx.arc(-8,-5,6,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.arc(8,-5,6,0,Math.PI*2);ctx.stroke();
+
+    ctx.fillStyle="#e6b422";
+    for(let x=-7;x<=7;x+=4) ctx.fillRect(x,7,3,5);
+
+    ctx.strokeStyle="#8b5520";
+    ctx.lineWidth=6;
+    ctx.beginPath();ctx.moveTo(17,2);ctx.lineTo(52,2);ctx.stroke();
+
+    ctx.fillStyle="#79e15c";
+    ctx.beginPath();ctx.arc(62,2,13,0,Math.PI*2);ctx.fill();
+
+    ctx.restore();
+}
+
+function drawEnemy(e){
+    ctx.save();
+    ctx.translate(e.x,e.y);
+    ctx.fillStyle=e.color;
+    ctx.beginPath();
+    ctx.arc(0,0,e.r,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle="#111";
+    ctx.beginPath();ctx.arc(-8,-6,4,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(8,-6,4,0,Math.PI*2);ctx.fill();
+
+    ctx.fillStyle="#ff5c3f";
+    ctx.beginPath();ctx.ellipse(0,8,9,5,0,0,Math.PI*2);ctx.fill();
+
+    ctx.fillStyle="#000";
+    ctx.fillRect(-e.r,-e.r-10,e.r*2,5);
+    ctx.fillStyle="#ff3f6c";
+    ctx.fillRect(-e.r,-e.r-10,(e.hp/e.maxHp)*e.r*2,5);
+
+    ctx.restore();
+}
+
+function draw(){
+    ctx.save();
+
+    if(shake>0){
+        ctx.translate(rand(-shake,shake),rand(-shake,shake));
+    }
+
+    drawArena();
+
+    balls.forEach(b=>{
+        ctx.save();
+        ctx.translate(b.x,b.y);
+        ctx.rotate(b.spin);
+        ctx.fillStyle="#ffda44";
+        ctx.beginPath();ctx.arc(0,0,b.r,0,Math.PI*2);ctx.fill();
+        ctx.strokeStyle="#fff3a0";
+        ctx.lineWidth=3;
+        ctx.beginPath();ctx.arc(0,0,b.r-4,-1.2,1.2);ctx.stroke();
+        ctx.restore();
+    });
+
+    enemies.forEach(drawEnemy);
+
+    bullets.forEach(b=>{
+        ctx.fillStyle="#d8fbff";
+        ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle="rgba(255,255,255,.8)";
+        ctx.beginPath();ctx.arc(b.x-3,b.y-3,3,0,Math.PI*2);ctx.fill();
+    });
+
+    drawPlayer();
+
+    particles.forEach(p=>{
+        ctx.globalAlpha=Math.max(0,p.life/35);
+        ctx.fillStyle=p.color;
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+        ctx.globalAlpha=1;
+    });
+
+    ctx.restore();
+}
+
+function loop(){
+    update();
+    draw();
+    requestAnimationFrame(loop);
+}
+
+function canvasPos(e){
+    const r = canvas.getBoundingClientRect();
+    return {
+        x:(e.clientX-r.left)*(canvas.width/r.width),
+        y:(e.clientY-r.top)*(canvas.height/r.height)
+    };
+}
+
+window.addEventListener("keydown",e=>{
+    unlockSound();
+    keys[e.key]=true;
+});
+window.addEventListener("keyup",e=>keys[e.key]=false);
+
+canvas.addEventListener("mousemove",e=>{
+    const p=canvasPos(e);
+    mouse.x=p.x; mouse.y=p.y;
+});
+canvas.addEventListener("mousedown",e=>{
+    unlockSound();
+    const p=canvasPos(e);
+    mouse.x=p.x; mouse.y=p.y;
+    mouse.down=true;
+});
+window.addEventListener("mouseup",()=>mouse.down=false);
+
+function setupPad(id,knobId,type){
+    const pad=document.getElementById(id);
+    const knob=document.getElementById(knobId);
+
+    function moveTouch(t){
+        const r=pad.getBoundingClientRect();
+        const cx=r.left+r.width/2;
+        const cy=r.top+r.height/2;
+        let dx=t.clientX-cx;
+        let dy=t.clientY-cy;
+        const len=Math.hypot(dx,dy);
+        const max=38;
+        if(len>max){dx=dx/len*max;dy=dy/len*max;}
+        knob.style.left=(38+dx)+"px";
+        knob.style.top=(38+dy)+"px";
+
+        const ndx = dx/max;
+        const ndy = dy/max;
+
+        mobile[type].dx = ndx;
+        mobile[type].dy = ndy;
+    }
+
+    pad.addEventListener("touchstart",e=>{
+        unlockSound();
+        e.preventDefault();
+        mobile[type].active=true;
+        moveTouch(e.touches[0]);
+    },{passive:false});
+
+    pad.addEventListener("touchmove",e=>{
+        e.preventDefault();
+        moveTouch(e.touches[0]);
+    },{passive:false});
+
+    pad.addEventListener("touchend",e=>{
+        e.preventDefault();
+        mobile[type].active=false;
+        knob.style.left="38px";
+        knob.style.top="38px";
+        if(type==="shoot"){
+            mobile.shoot.dx=1;
+            mobile.shoot.dy=0;
+        }else{
+            mobile.move.dx=0;
+            mobile.move.dy=0;
         }
-        
-        // ----- DRAW EVERYTHING (canvas) -----
-        function draw() {
-            ctx.clearRect(0, 0, W, H);
-            
-            // background tiles (bathroom floor)
-            ctx.fillStyle = "#c4e0e6";
-            ctx.fillRect(0,0,W,H);
-            for(let i=0;i<W/40;i++) {
-                for(let j=0;j<H/40;j++) {
-                    ctx.fillStyle = (i+j)%2===0 ? "#b0d4de" : "#9ac2ce";
-                    ctx.fillRect(i*40,j*40,38,38);
-                }
-            }
-            
-            // tennis balls
-            for(let b of tennisBalls) {
-                ctx.beginPath();
-                ctx.arc(b.x, b.y, b.radius-1, 0, Math.PI*2);
-                ctx.fillStyle = "#f7d44a";
-                ctx.fill();
-                ctx.fillStyle = "#c99e1a";
-                ctx.beginPath();
-                ctx.arc(b.x-2, b.y-2, 2, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = "#5c3e0b";
-                ctx.beginPath();
-                ctx.arc(b.x+1, b.y+1, 1.5, 0, Math.PI*2);
-                ctx.fill();
-            }
-            
-            // enemies (grime monsters)
-            for(let e of enemies) {
-                ctx.shadowBlur = 0;
-                ctx.beginPath();
-                ctx.arc(e.x, e.y, e.radius-2, 0, Math.PI*2);
-                ctx.fillStyle = "#4a6741";
-                ctx.fill();
-                ctx.fillStyle = "#2c3e2b";
-                ctx.beginPath();
-                ctx.ellipse(e.x-5, e.y-4, 3, 5, 0, 0, Math.PI*2);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.ellipse(e.x+5, e.y-4, 3, 5, 0, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = "#ac4e2b";
-                ctx.beginPath();
-                ctx.ellipse(e.x, e.y+3, 5, 3, 0, 0, Math.PI*2);
-                ctx.fill();
-            }
-            
-            // ---- Reh Dogg (player) ----
-            ctx.shadowBlur = 0;
-            // shower booties
-            ctx.fillStyle = "#ffcc33";
-            ctx.beginPath();
-            ctx.ellipse(player.x-12, player.y+12, 8, 5, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(player.x+12, player.y+12, 8, 5, 0, 0, Math.PI*2);
-            ctx.fill();
-            // body
-            ctx.fillStyle = "#4b2e24";
-            ctx.beginPath();
-            ctx.arc(player.x, player.y, player.radius-4, 0, Math.PI*2);
-            ctx.fill();
-            // shower curtain cape
-            ctx.fillStyle = "#b9e6f0aa";
-            ctx.beginPath();
-            ctx.moveTo(player.x-18, player.y-8);
-            ctx.quadraticCurveTo(player.x-28, player.y+10, player.x-12, player.y+24);
-            ctx.lineTo(player.x+12, player.y+24);
-            ctx.quadraticCurveTo(player.x+28, player.y+10, player.x+18, player.y-8);
-            ctx.fill();
-            // head
-            ctx.fillStyle = "#8b5a2b";
-            ctx.beginPath();
-            ctx.arc(player.x, player.y-6, 16, 0, Math.PI*2);
-            ctx.fill();
-            // glasses
-            ctx.strokeStyle = "#111";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(player.x-8, player.y-10, 5, 0, Math.PI*2);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.arc(player.x+8, player.y-10, 5, 0, Math.PI*2);
-            ctx.stroke();
-            ctx.fillStyle = "#fff9e0";
-            ctx.beginPath();
-            ctx.arc(player.x-8, player.y-10, 3, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(player.x+8, player.y-10, 3, 0, Math.PI*2);
-            ctx.fill();
-            // gold teeth grin
-            ctx.fillStyle = "#e6b422";
-            for(let off=-3; off<=3; off+=2) {
-                ctx.fillRect(player.x+off, player.y-3, 2, 3);
-            }
-            // shower cap
-            ctx.fillStyle = "#f4a2c2";
-            ctx.beginPath();
-            ctx.ellipse(player.x, player.y-18, 14, 8, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = "#d96c9e";
-            ctx.beginPath();
-            ctx.ellipse(player.x, player.y-20, 9, 5, 0, 0, Math.PI*2);
-            ctx.fill();
-            // loofah on a stick (weapon)
-            let angleToMouse = Math.atan2(mouseY - player.y, mouseX - player.x);
-            let handX = player.x + Math.cos(angleToMouse)*18;
-            let handY = player.y + Math.sin(angleToMouse)*18 - 4;
-            ctx.beginPath();
-            ctx.moveTo(handX, handY);
-            ctx.lineTo(handX + Math.cos(angleToMouse)*28, handY + Math.sin(angleToMouse)*28);
-            ctx.lineWidth = 5;
-            ctx.strokeStyle = "#a56b2f";
-            ctx.stroke();
-            ctx.fillStyle = "#8cd96f";
-            ctx.beginPath();
-            ctx.arc(handX + Math.cos(angleToMouse)*28, handY + Math.sin(angleToMouse)*28, 9, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = "#6bb54e";
-            for(let i=0;i<5;i++) ctx.fillRect(handX + Math.cos(angleToMouse)*26 + i-2, handY + Math.sin(angleToMouse)*26-3, 3, 6);
-            
-            // projectiles (suds)
-            for(let p of projectiles) {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, PROJECTILE_RADIUS-2, 0, Math.PI*2);
-                ctx.fillStyle = "#d9f0f7";
-                ctx.fill();
-                ctx.fillStyle = "#b0e0f0";
-                ctx.beginPath();
-                ctx.arc(p.x-2, p.y-2, 2, 0, Math.PI*2);
-                ctx.fill();
-            }
-            
-            // win/lose messages
-            if(!gameRunning) {
-                ctx.font = "bold 40m 'Segoe UI'";
-                ctx.fillStyle = "#1f2f2f";
-                ctx.shadowBlur = 4;
-                if(gameWinFlag) {
-                    ctx.fillText("🧼 WINNER! SQUEAKY CLEAN 🧼", W/2-220, H/2-50);
-                    ctx.font = "20px 'Segoe UI'";
-                    ctx.fillStyle = "#2e6c80";
-                    ctx.fillText("Reh Dogg says: 'Told you I'm the main character.'", W/2-280, H/2+30);
-                } else {
-                    ctx.fillText("💔 SCRUBBED OUT...", W/2-170, H/2-40);
-                    ctx.font = "18px 'Segoe UI'";
-                    ctx.fillStyle = "#ac4e2b";
-                    ctx.fillText("Press 'Fresh Shower' to try again", W/2-170, H/2+30);
-                }
-            }
-        }
-        
-        // ---- SHOOT (called on mouse click / drag) ----
-        function shootProjectile(targetX, targetY) {
-            if(!gameRunning) return;
-            if(shootCooldown > 0) return;
-            let dx = targetX - player.x;
-            let dy = targetY - player.y;
-            let len = Math.hypot(dx,dy);
-            if(len<0.01) return;
-            let vx = (dx / len) * PROJECTILE_SPEED;
-            let vy = (dy / len) * PROJECTILE_SPEED;
-            projectiles.push({
-                x: player.x + (dx/len)*(player.radius+5),
-                y: player.y + (dy/len)*(player.radius+5),
-                vx: vx, vy: vy,
-                radius: PROJECTILE_RADIUS
-            });
-            shootCooldown = SHOOT_DELAY_FRAMES;
-        }
-        
-        // ---- EVENT HANDLERS ----
-        function handleKeyDown(e) {
-            let k = e.key;
-            if(keys.hasOwnProperty(k)) keys[k] = true;
-            if(k === ' ' || k === 'Space') {
-                e.preventDefault();
-                shootProjectile(mouseX, mouseY);
-            }
-        }
-        function handleKeyUp(e) {
-            let k = e.key;
-            if(keys.hasOwnProperty(k)) keys[k] = false;
-        }
-        function handleMouseMove(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            let rawX = (e.clientX - rect.left) * scaleX;
-            let rawY = (e.clientY - rect.top) * scaleY;
-            mouseX = Math.min(W, Math.max(0, rawX));
-            mouseY = Math.min(H, Math.max(0, rawY));
-        }
-        let mouseDown = false;
-        function handleMouseDown(e) {
-            e.preventDefault();
-            mouseDown = true;
-            shootProjectile(mouseX, mouseY);
-        }
-        function handleMouseUp(e) { mouseDown = false; }
-        function handleMouseLeave(e) { mouseDown = false; }
-        
-        // continuous shooting while mouse held
-        function continuousShoot() {
-            if(mouseDown && gameRunning && shootCooldown===0) {
-                shootProjectile(mouseX, mouseY);
-            }
-        }
-        
-        // animation loop
-        function gameLoop() {
-            updateGame();
-            draw();
-            continuousShoot();
-            requestAnimationFrame(gameLoop);
-        }
-        
-        // initialize canvas listeners
-        function init() {
-            resetGame();
-            window.addEventListener('keydown', handleKeyDown);
-            window.addEventListener('keyup', handleKeyUp);
-            canvas.addEventListener('mousemove', handleMouseMove);
-            canvas.addEventListener('mousedown', handleMouseDown);
-            window.addEventListener('mouseup', handleMouseUp);
-            canvas.addEventListener('mouseleave', handleMouseLeave);
-            document.getElementById('resetBtn').addEventListener('click', () => resetGame());
-            gameLoop();
-        }
-        
-        init();
-    })();
+    },{passive:false});
+}
+
+setupPad("movePad","moveKnob","move");
+setupPad("shootPad","shootKnob","shoot");
+
+document.getElementById("startBtn").onclick=()=>{
+    unlockSound();
+    overlay.style.display="none";
+    reset();
+};
+
+document.getElementById("restartBtn").onclick=()=>{
+    unlockSound();
+    overlay.style.display="none";
+    reset();
+};
+
+if(!CanvasRenderingContext2D.prototype.roundRect){
+    CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+        this.beginPath();
+        this.moveTo(x+r,y);
+        this.lineTo(x+w-r,y);
+        this.quadraticCurveTo(x+w,y,x+w,y+r);
+        this.lineTo(x+w,y+h-r);
+        this.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+        this.lineTo(x+r,y+h);
+        this.quadraticCurveTo(x,y+h,x,y+h-r);
+        this.lineTo(x,y+r);
+        this.quadraticCurveTo(x,y,x+r,y);
+        this.closePath();
+    };
+}
+
+draw();
+loop();
+})();
 </script>
 </body>
 </html>
