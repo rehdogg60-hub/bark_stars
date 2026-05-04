@@ -533,7 +533,8 @@ function update(){
             let a = Math.atan2(player.y-e.y,player.x-e.x);
             player.x += Math.cos(a)*45;
             player.y += Math.sin(a)*45;
-
+            ctx.fillStyle = "rgba(255,0,0,0.2)";
+            ctx.fillRect(0,0,W,H);
             if(player.hp<=0){
                 running = false;
                 won = false;
