@@ -1,107 +1,600 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Bark Stars | Reh Dogg's Sudsy Squad</title>
-    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Bark Stars – Reh Dogg Games Plus</title>
     <style>
-        .w3-margin > a, .w3-margin > p, .w3-margin > table {
-            font-size: 1.2rem;
-        }
-        .role {
-            font-size: 1rem;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
         }
         body {
-            background: #f0f8ff;
+            background: linear-gradient(145deg, #0a2f3f, #0a1f2a);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Comic Neue', sans-serif;
         }
-        .bark-header {
-            background: linear-gradient(135deg, #2e6c80, #1e4a5f);
+        .game-container {
+            background: #1c3e4a;
+            padding: 20px;
+            border-radius: 48px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.4);
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 24px;
+            box-shadow: 0 0 0 4px #ffd966, 0 0 0 8px #2e6c80;
+            cursor: crosshair;
+        }
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            background: #fef5e0;
+            padding: 10px 20px;
+            border-radius: 60px;
+            color: #1e4a5f;
+            font-weight: bold;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .stats {
+            display: flex;
+            gap: 24px;
+            background: #2e6c80;
+            padding: 6px 18px;
+            border-radius: 40px;
             color: white;
-            padding: 0.5rem;
-            border-radius: 12px;
+        }
+        .controls {
+            font-size: 0.8rem;
+            background: #ffe0b5;
+            padding: 5px 12px;
+            border-radius: 30px;
+        }
+        button {
+            background: #ffb347;
+            border: none;
+            font-weight: bold;
+            padding: 6px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.1s linear;
+        }
+        button:hover {
+            background: #ff9f1a;
+            transform: scale(0.97);
         }
         .reh-quote {
             font-style: italic;
-            background: #ffe0b5;
-            padding: 8px 12px;
-            border-left: 6px solid #ffb347;
-            margin: 16px 0;
+            font-size: 0.8rem;
+            background: #d9e6f0;
+            padding: 4px 12px;
+            border-radius: 20px;
         }
-        .gold-tooth {
-            color: #ffd966;
+        @media (max-width: 800px) {
+            .info-panel { flex-direction: column; align-items: stretch; text-align: center; }
+            .controls { text-align: center; }
         }
     </style>
 </head>
 <body>
-<div class="content">
-    <div class="w3-bar w3-border-bottom w3-white">
-        <a class="w3-bar-item w3-button" href="/"><span style="color: black;">BARK</span> <b style="color: #2e6c80;">STARS</b></a>
-        <a class="w3-bar-item w3-button w3-text-black" href="/news">Sudsy News</a>
-        <a class="w3-bar-item w3-button w3-text-black" href="/curriculum">Shower Schedule</a>
-        <a class="w3-bar-item w3-button w3-text-black" href="/forum">Loofah Forum</a>
-        <a class="w3-bar-item w3-button w3-text-black" href="/product">Reh-skins</a>
-        <a class="w3-bar-item w3-button w3-text-black w3-right" href="/me"><i class="fas fa-user-circle" style="font-size: 1.5rem;"></i></a>
-    </div>
-
-    <div class="w3-margin">
-        <div class="bark-header w3-padding">
-            <h2>🧼 吠星亂鬥 <strong>Bark Stars</strong></h2>
-            <p>✨ starring <strong>Reh Dogg</strong> – gold-toothed loofah legend ✨</p>
+<div>
+    <div class="game-container">
+        <canvas id="gameCanvas" width="1000" height="700"></canvas>
+        <div class="info-panel">
+            <div class="stats">
+                <span>🧼 Suds: <span id="scoreCount">0</span></span>
+                <span>❤️ Shower health: <span id="healthCount">5</span></span>
+                <span>🧽 Tennis balls: <span id="ballCount">0</span> / 8</span>
+            </div>
+            <div class="controls">
+                🎮 WASD / arrows • 🖱️ mouse aim • 🖱️ hold left click = shoot suds
+            </div>
+            <button id="resetBtn">🚿 Fresh Shower (restart)</button>
         </div>
-
-        <p><a href="#" style="background:#2e6c80; color:white; padding:4px 12px; border-radius:20px; text-decoration:none;">🚿 JOIN REH'S SUDSY SQUAD 🧽</a></p>
-
-        <p id="sudsScore" style="color: #2e6c80; font-weight: bold;"></p>
-        <p id="onlineMembers" style="color: green;"></p>
-
-        <div id="list"></div>
-
         <div class="reh-quote">
-            <i class="fas fa-dog"></i> <strong>Reh Dogg says:</strong> “I let you join my club. You're welcome. Don't slip.”
-            <span class="gold-tooth">🦷✨</span>
+            💬 “Short king with gold teeth. Don't slip.” — Reh Dogg
         </div>
     </div>
 </div>
 
 <script>
-const clubMock = {
-    sudsScore: 28490,
-    onlineMembers: 12,
-    membersCount: 28,
-    members: [
-        { name: "🧼 Reh Dogg", trophies: 12450, role: "Shower Captain 👑" },
-        { name: "🎧 DJ Reh Dogg", trophies: 11200, role: "Beat Dropper" },
-        { name: "🥷 Ninja Reh", trophies: 9870, role: "Silent Squeaker" },
-        { name: "🚀 Astronaut Reh", trophies: 8950, role: "Zero-G Loofah" },
-        { name: "🧽 Mop Dogg", trophies: 7640, role: "Swamp Cleaner" }
-    ]
-};
+    (function(){
+        // ----- CANVAS -----
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-document.getElementById("sudsScore").innerHTML = "🧼 Total Suds: " + clubMock.sudsScore;
-document.getElementById("onlineMembers").innerHTML =
-"🚿 Online: " + clubMock.onlineMembers + " / " + clubMock.membersCount;
+        // ----- GAME DIMENSIONS -----
+        const W = 1000, H = 700;
 
-function listMembers(members) {
-    let container = document.getElementById("list");
+        // ----- PLAYER (Reh Dogg) -----
+        let player = {
+            x: W/2,
+            y: H/2,
+            radius: 22,
+            health: 5,
+            invincibleFrames: 0,   // after hit, brief immunity
+            maxHealth: 5
+        };
 
-    let table = document.createElement("table");
-    table.className = "w3-table w3-striped w3-border";
+        // ----- PROJECTILES (suds) -----
+        let projectiles = [];
+        const PROJECTILE_RADIUS = 8;
+        const PROJECTILE_SPEED = 9;
+        let shootCooldown = 0;
+        const SHOOT_DELAY_FRAMES = 10;  // ~60fps -> 6 shots per second
 
-    members.forEach((m, i) => {
-        let row = `<tr>
-            <td>${i+1}</td>
-            <td>${m.name}</td>
-            <td>${m.role}</td>
-            <td>${m.trophies} suds</td>
-        </tr>`;
-        table.innerHTML += row;
-    });
+        // ----- ENEMIES (rival brawlers / dirty grime monsters) -----
+        let enemies = [];
+        const ENEMY_BASE_SPEED = 0.9;
+        const ENEMY_RADIUS = 20;
+        let enemySpawnCounter = 0;
+        const ENEMY_SPAWN_DELAY = 70;   // frames between spawns
+        let maxEnemies = 8;
 
-    container.appendChild(table);
-}
+        // ----- COLLECTABLES (tennis balls) -----
+        let tennisBalls = [];
+        const BALL_RADIUS = 9;
+        let ballsCollected = 0;
+        const BALLS_TO_WIN = 8;   // win condition
 
-listMembers(clubMock.members);
+        // ----- GAME STATE -----
+        let gameRunning = true;
+        let gameWinFlag = false;
+        let score = 0;      // suds = kills
+
+        // ----- MOUSE POSITION (for aiming) -----
+        let mouseX = player.x, mouseY = player.y;
+
+        // ----- MOVEMENT FLAGS (WASD + arrows)-----
+        const keys = {
+            ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false,
+            w: false, s: false, a: false, d: false
+        };
+
+        // ----- Helper: Spawn Tennis Balls randomly (non-overlapping) -----
+        function spawnTennisBalls(count) {
+            tennisBalls = [];
+            for(let i=0; i<count; i++) {
+                let overlap = true;
+                let tries = 0;
+                let nx, ny;
+                while(overlap && tries < 200) {
+                    nx = 40 + Math.random() * (W - 80);
+                    ny = 40 + Math.random() * (H - 80);
+                    overlap = false;
+                    // avoid overlapping with player start
+                    let dx = nx - player.x;
+                    let dy = ny - player.y;
+                    if(Math.hypot(dx,dy) < 50) overlap = true;
+                    // avoid overlapping with each other
+                    for(let b of tennisBalls) {
+                        if(Math.hypot(nx - b.x, ny - b.y) < BALL_RADIUS*2) {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                    tries++;
+                }
+                tennisBalls.push({ x: nx, y: ny, radius: BALL_RADIUS });
+            }
+        }
+
+        // ----- Spawn enemy at safe distance from player -----
+        function spawnEnemy() {
+            if(enemies.length >= maxEnemies+2) return;
+            let side = Math.floor(Math.random() * 4);
+            let ex, ey;
+            if(side === 0) { ex = 30; ey = Math.random() * H; }
+            else if(side === 2) { ex = W-30; ey = Math.random() * H; }
+            else if(side === 1) { ex = Math.random() * W; ey = 30; }
+            else { ex = Math.random() * W; ey = H-30; }
+            // avoid instant collision with player
+            if(Math.hypot(ex - player.x, ey - player.y) < 120) {
+                ex = Math.min(W-40, Math.max(40, ex+80));
+                ey = Math.min(H-40, Math.max(40, ey+80));
+            }
+            enemies.push({
+                x: ex, y: ey,
+                radius: ENEMY_RADIUS,
+                hp: 1,   // one hit kill
+                speed: ENEMY_BASE_SPEED + Math.random() * 0.6
+            });
+        }
+
+        // ----- Reset full game -----
+        function resetGame() {
+            gameRunning = true;
+            gameWinFlag = false;
+            player.health = player.maxHealth;
+            player.invincibleFrames = 0;
+            player.x = W/2;
+            player.y = H/2;
+            score = 0;
+            ballsCollected = 0;
+            projectiles = [];
+            enemies = [];
+            tennisBalls = [];
+            shootCooldown = 0;
+            enemySpawnCounter = 8;   // quick first enemies
+            
+            document.getElementById('scoreCount').innerText = score;
+            document.getElementById('healthCount').innerText = player.health;
+            document.getElementById('ballCount').innerText = ballsCollected + " / " + BALLS_TO_WIN;
+            
+            spawnTennisBalls(BALLS_TO_WIN);
+            // spawn initial 2 enemies
+            for(let i=0; i<3; i++) spawnEnemy();
+        }
+
+        // ----- UPDATE LOGIC (called each frame) -----
+        function updateGame() {
+            if(!gameRunning) return;
+
+            // 1) movement
+            let moveX = 0, moveY = 0;
+            if(keys.ArrowUp || keys.w) moveY -= 1;
+            if(keys.ArrowDown || keys.s) moveY += 1;
+            if(keys.ArrowLeft || keys.a) moveX -= 1;
+            if(keys.ArrowRight || keys.d) moveX += 1;
+            if(moveX !== 0 || moveY !== 0) {
+                const len = Math.hypot(moveX, moveY);
+                moveX /= len;
+                moveY /= len;
+            }
+            let speed = 5.2;
+            let newX = player.x + moveX * speed;
+            let newY = player.y + moveY * speed;
+            // boundaries
+            player.x = Math.min(W - player.radius - 2, Math.max(player.radius + 2, newX));
+            player.y = Math.min(H - player.radius - 2, Math.max(player.radius + 2, newY));
+
+            // 2) shooting (cooldown)
+            if(shootCooldown > 0) shootCooldown--;
+            
+            // 3) update projectiles
+            for(let i=0; i<projectiles.length; i++) {
+                let p = projectiles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                if(p.x < -50 || p.x > W+50 || p.y < -50 || p.y > H+50) {
+                    projectiles.splice(i,1);
+                    i--;
+                    continue;
+                }
+                // hit enemies
+                let hit = false;
+                for(let j=0; j<enemies.length; j++) {
+                    let e = enemies[j];
+                    if(Math.hypot(p.x - e.x, p.y - e.y) < PROJECTILE_RADIUS + e.radius) {
+                        enemies.splice(j,1);
+                        hit = true;
+                        score++;
+                        document.getElementById('scoreCount').innerText = score;
+                        break;
+                    }
+                }
+                if(hit) {
+                    projectiles.splice(i,1);
+                    i--;
+                }
+            }
+            
+            // 4) enemy movement & collision with player
+            for(let i=0; i<enemies.length; i++) {
+                let e = enemies[i];
+                let dx = player.x - e.x;
+                let dy = player.y - e.y;
+                let dist = Math.hypot(dx,dy);
+                if(dist > 0.01) {
+                    let move = e.speed;
+                    e.x += (dx / dist) * move;
+                    e.y += (dy / dist) * move;
+                }
+                // boundaries for enemies
+                e.x = Math.min(W - e.radius - 2, Math.max(e.radius + 2, e.x));
+                e.y = Math.min(H - e.radius - 2, Math.max(e.radius + 2, e.y));
+                
+                // enemy-player collision (damage)
+                if(Math.hypot(player.x - e.x, player.y - e.y) < player.radius + e.radius) {
+                    if(player.invincibleFrames <= 0 && gameRunning && !gameWinFlag) {
+                        player.health--;
+                        document.getElementById('healthCount').innerText = player.health;
+                        if(player.health <= 0) {
+                            gameRunning = false;
+                            gameWinFlag = false;
+                            return;
+                        }
+                        player.invincibleFrames = 25;  // ~0.4 sec
+                        // knockback
+                        let angle = Math.atan2(player.y - e.y, player.x - e.x);
+                        player.x += Math.cos(angle) * 35;
+                        player.y += Math.sin(angle) * 35;
+                        player.x = Math.min(W - player.radius - 2, Math.max(player.radius + 2, player.x));
+                        player.y = Math.min(H - player.radius - 2, Math.max(player.radius + 2, player.y));
+                    }
+                }
+            }
+            
+            // invincibility frames reduction
+            if(player.invincibleFrames > 0) player.invincibleFrames--;
+            
+            // 5) collect tennis balls
+            for(let i=0; i<tennisBalls.length; i++) {
+                let ball = tennisBalls[i];
+                if(Math.hypot(player.x - ball.x, player.y - ball.y) < player.radius + ball.radius) {
+                    tennisBalls.splice(i,1);
+                    ballsCollected++;
+                    document.getElementById('ballCount').innerText = ballsCollected + " / " + BALLS_TO_WIN;
+                    i--;
+                }
+            }
+            
+            // win condition
+            if(ballsCollected >= BALLS_TO_WIN && gameRunning) {
+                gameRunning = false;
+                gameWinFlag = true;
+                return;
+            }
+            
+            // 6) enemy spawn
+            if(enemies.length < maxEnemies + 1) {
+                if(enemySpawnCounter <= 0) {
+                    spawnEnemy();
+                    enemySpawnCounter = ENEMY_SPAWN_DELAY;
+                } else {
+                    enemySpawnCounter--;
+                }
+            } else {
+                enemySpawnCounter = 5;
+            }
+        }
+        
+        // ----- DRAW EVERYTHING (canvas) -----
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+            
+            // background tiles (bathroom floor)
+            ctx.fillStyle = "#c4e0e6";
+            ctx.fillRect(0,0,W,H);
+            for(let i=0;i<W/40;i++) {
+                for(let j=0;j<H/40;j++) {
+                    ctx.fillStyle = (i+j)%2===0 ? "#b0d4de" : "#9ac2ce";
+                    ctx.fillRect(i*40,j*40,38,38);
+                }
+            }
+            
+            // tennis balls
+            for(let b of tennisBalls) {
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.radius-1, 0, Math.PI*2);
+                ctx.fillStyle = "#f7d44a";
+                ctx.fill();
+                ctx.fillStyle = "#c99e1a";
+                ctx.beginPath();
+                ctx.arc(b.x-2, b.y-2, 2, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = "#5c3e0b";
+                ctx.beginPath();
+                ctx.arc(b.x+1, b.y+1, 1.5, 0, Math.PI*2);
+                ctx.fill();
+            }
+            
+            // enemies (grime monsters)
+            for(let e of enemies) {
+                ctx.shadowBlur = 0;
+                ctx.beginPath();
+                ctx.arc(e.x, e.y, e.radius-2, 0, Math.PI*2);
+                ctx.fillStyle = "#4a6741";
+                ctx.fill();
+                ctx.fillStyle = "#2c3e2b";
+                ctx.beginPath();
+                ctx.ellipse(e.x-5, e.y-4, 3, 5, 0, 0, Math.PI*2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(e.x+5, e.y-4, 3, 5, 0, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = "#ac4e2b";
+                ctx.beginPath();
+                ctx.ellipse(e.x, e.y+3, 5, 3, 0, 0, Math.PI*2);
+                ctx.fill();
+            }
+            
+            // ---- Reh Dogg (player) ----
+            ctx.shadowBlur = 0;
+            // shower booties
+            ctx.fillStyle = "#ffcc33";
+            ctx.beginPath();
+            ctx.ellipse(player.x-12, player.y+12, 8, 5, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(player.x+12, player.y+12, 8, 5, 0, 0, Math.PI*2);
+            ctx.fill();
+            // body
+            ctx.fillStyle = "#4b2e24";
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.radius-4, 0, Math.PI*2);
+            ctx.fill();
+            // shower curtain cape
+            ctx.fillStyle = "#b9e6f0aa";
+            ctx.beginPath();
+            ctx.moveTo(player.x-18, player.y-8);
+            ctx.quadraticCurveTo(player.x-28, player.y+10, player.x-12, player.y+24);
+            ctx.lineTo(player.x+12, player.y+24);
+            ctx.quadraticCurveTo(player.x+28, player.y+10, player.x+18, player.y-8);
+            ctx.fill();
+            // head
+            ctx.fillStyle = "#8b5a2b";
+            ctx.beginPath();
+            ctx.arc(player.x, player.y-6, 16, 0, Math.PI*2);
+            ctx.fill();
+            // glasses
+            ctx.strokeStyle = "#111";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(player.x-8, player.y-10, 5, 0, Math.PI*2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(player.x+8, player.y-10, 5, 0, Math.PI*2);
+            ctx.stroke();
+            ctx.fillStyle = "#fff9e0";
+            ctx.beginPath();
+            ctx.arc(player.x-8, player.y-10, 3, 0, Math.PI*2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(player.x+8, player.y-10, 3, 0, Math.PI*2);
+            ctx.fill();
+            // gold teeth grin
+            ctx.fillStyle = "#e6b422";
+            for(let off=-3; off<=3; off+=2) {
+                ctx.fillRect(player.x+off, player.y-3, 2, 3);
+            }
+            // shower cap
+            ctx.fillStyle = "#f4a2c2";
+            ctx.beginPath();
+            ctx.ellipse(player.x, player.y-18, 14, 8, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = "#d96c9e";
+            ctx.beginPath();
+            ctx.ellipse(player.x, player.y-20, 9, 5, 0, 0, Math.PI*2);
+            ctx.fill();
+            // loofah on a stick (weapon)
+            let angleToMouse = Math.atan2(mouseY - player.y, mouseX - player.x);
+            let handX = player.x + Math.cos(angleToMouse)*18;
+            let handY = player.y + Math.sin(angleToMouse)*18 - 4;
+            ctx.beginPath();
+            ctx.moveTo(handX, handY);
+            ctx.lineTo(handX + Math.cos(angleToMouse)*28, handY + Math.sin(angleToMouse)*28);
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = "#a56b2f";
+            ctx.stroke();
+            ctx.fillStyle = "#8cd96f";
+            ctx.beginPath();
+            ctx.arc(handX + Math.cos(angleToMouse)*28, handY + Math.sin(angleToMouse)*28, 9, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = "#6bb54e";
+            for(let i=0;i<5;i++) ctx.fillRect(handX + Math.cos(angleToMouse)*26 + i-2, handY + Math.sin(angleToMouse)*26-3, 3, 6);
+            
+            // projectiles (suds)
+            for(let p of projectiles) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, PROJECTILE_RADIUS-2, 0, Math.PI*2);
+                ctx.fillStyle = "#d9f0f7";
+                ctx.fill();
+                ctx.fillStyle = "#b0e0f0";
+                ctx.beginPath();
+                ctx.arc(p.x-2, p.y-2, 2, 0, Math.PI*2);
+                ctx.fill();
+            }
+            
+            // win/lose messages
+            if(!gameRunning) {
+                ctx.font = "bold 40m 'Segoe UI'";
+                ctx.fillStyle = "#1f2f2f";
+                ctx.shadowBlur = 4;
+                if(gameWinFlag) {
+                    ctx.fillText("🧼 WINNER! SQUEAKY CLEAN 🧼", W/2-220, H/2-50);
+                    ctx.font = "20px 'Segoe UI'";
+                    ctx.fillStyle = "#2e6c80";
+                    ctx.fillText("Reh Dogg says: 'Told you I'm the main character.'", W/2-280, H/2+30);
+                } else {
+                    ctx.fillText("💔 SCRUBBED OUT...", W/2-170, H/2-40);
+                    ctx.font = "18px 'Segoe UI'";
+                    ctx.fillStyle = "#ac4e2b";
+                    ctx.fillText("Press 'Fresh Shower' to try again", W/2-170, H/2+30);
+                }
+            }
+        }
+        
+        // ---- SHOOT (called on mouse click / drag) ----
+        function shootProjectile(targetX, targetY) {
+            if(!gameRunning) return;
+            if(shootCooldown > 0) return;
+            let dx = targetX - player.x;
+            let dy = targetY - player.y;
+            let len = Math.hypot(dx,dy);
+            if(len<0.01) return;
+            let vx = (dx / len) * PROJECTILE_SPEED;
+            let vy = (dy / len) * PROJECTILE_SPEED;
+            projectiles.push({
+                x: player.x + (dx/len)*(player.radius+5),
+                y: player.y + (dy/len)*(player.radius+5),
+                vx: vx, vy: vy,
+                radius: PROJECTILE_RADIUS
+            });
+            shootCooldown = SHOOT_DELAY_FRAMES;
+        }
+        
+        // ---- EVENT HANDLERS ----
+        function handleKeyDown(e) {
+            let k = e.key;
+            if(keys.hasOwnProperty(k)) keys[k] = true;
+            if(k === ' ' || k === 'Space') {
+                e.preventDefault();
+                shootProjectile(mouseX, mouseY);
+            }
+        }
+        function handleKeyUp(e) {
+            let k = e.key;
+            if(keys.hasOwnProperty(k)) keys[k] = false;
+        }
+        function handleMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let rawX = (e.clientX - rect.left) * scaleX;
+            let rawY = (e.clientY - rect.top) * scaleY;
+            mouseX = Math.min(W, Math.max(0, rawX));
+            mouseY = Math.min(H, Math.max(0, rawY));
+        }
+        let mouseDown = false;
+        function handleMouseDown(e) {
+            e.preventDefault();
+            mouseDown = true;
+            shootProjectile(mouseX, mouseY);
+        }
+        function handleMouseUp(e) { mouseDown = false; }
+        function handleMouseLeave(e) { mouseDown = false; }
+        
+        // continuous shooting while mouse held
+        function continuousShoot() {
+            if(mouseDown && gameRunning && shootCooldown===0) {
+                shootProjectile(mouseX, mouseY);
+            }
+        }
+        
+        // animation loop
+        function gameLoop() {
+            updateGame();
+            draw();
+            continuousShoot();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // initialize canvas listeners
+        function init() {
+            resetGame();
+            window.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('keyup', handleKeyUp);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mousedown', handleMouseDown);
+            window.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('mouseleave', handleMouseLeave);
+            document.getElementById('resetBtn').addEventListener('click', () => resetGame());
+            gameLoop();
+        }
+        
+        init();
+    })();
 </script>
 </body>
 </html>
