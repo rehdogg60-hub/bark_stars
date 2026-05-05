@@ -419,6 +419,26 @@ function spawnEnemy(){
 }
 let superReady = true;
 function shoot(tx,ty){
+    function superBlast(){
+    if(!superReady || !running) return;
+
+    superReady = false;
+
+    burst(player.x, player.y, "#00ffff", 40);
+
+    enemies = enemies.filter(e=>{
+        if(distance(player.x, player.y, e.x, e.y) < 120){
+            score += 15;
+            burst(e.x, e.y, "#7cff8b", 20);
+            return false;
+        }
+        return true;
+    });
+
+    updateHud();
+
+    setTimeout(()=>{ superReady = true; }, 3000);
+}
     if(!running||shootTimer>0)return;
 
     let dx=tx-player.x,dy=ty-player.y;
