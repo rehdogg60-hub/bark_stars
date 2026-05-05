@@ -508,8 +508,9 @@ function update(){
     if(shootTimer>0)shootTimer--;
     if(shake>0)shake--;
 
-    if(mouse.down)shoot(mouse.x,mouse.y);
-
+    if(mouse.down && shootTimer === 0){
+    shoot(mouse.x,mouse.y);
+}
     if(mobile.shoot.active){
         shoot(player.x+mobile.shoot.dx*150,player.y+mobile.shoot.dy*150);
     }
