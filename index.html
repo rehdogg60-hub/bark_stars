@@ -896,6 +896,11 @@ function canvasPos(e){
 window.addEventListener("keydown",e=>{
     unlockSound();
     keys[e.key]=true;
+
+    if(e.code === "Space" && !e.repeat){
+        e.preventDefault();
+        superBlast();
+    }
 });
 
 window.addEventListener("keyup",e=>{
