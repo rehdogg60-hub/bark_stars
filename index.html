@@ -412,7 +412,7 @@ function spawnEnemy(){
         r:18+Math.random()*16,
         hp:type>.75?3:type>.45?2:1,
         maxHp:type>.75?3:type>.45?2:1,
-        speed:type>.75?1.05:type>.45?1.55:2.05,
+        speed:type>.75?0.85:type>.45?1.2:1.6,
         color:type>.75?"#ff0000":type>.45?"#00ff00":"#00ffff",
         wobble:Math.random()*100
     });
